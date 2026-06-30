@@ -1,0 +1,6 @@
+captures/*
+!captures/.gitkeep
+*.bin
+*.elf
+*.map
+build/
