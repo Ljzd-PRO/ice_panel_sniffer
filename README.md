@@ -1,48 +1,62 @@
-# ESP32-C3 Ice Panel Sniffer And Control Tool
+# ESP32-C3 制冰机面板嗅探与控制工具
 
 <p align="center">
-  <img src="docs/images/logo.png" alt="ESP32-C3 Ice Panel Sniffer logo" width="220">
+  <img src="docs/images/logo.png" alt="ESP32-C3 制冰机面板嗅探工具 logo" width="220">
 </p>
 
-ESP32-C3 tooling for reverse-engineering and bench-controlling the five-wire
-ice-maker control panel. The final protocol summary for remote-control software
-is in:
+语言：中文 | [English](README.en.md)
+
+这是一个基于 ESP32-C3 的工具集，用于逆向分析和台架控制制冰机五线控制面板。供后续远程控制软件使用的最终协议总结在：
 
 ```text
-ice_panel_sniffer/PANEL_CONTROL_PROTOCOL.md
+PANEL_CONTROL_PROTOCOL.md
 ```
 
-The ESPHome/Home Assistant firmware created from the verified protocol is in:
+基于已验证协议制作的 ESPHome / Home Assistant 固件位于同级仓库：
 
 ```text
-ice_panel_esphome/
+../chang_hong_ice_maker_esphome/
 ```
 
-This runbook documents the tested direct-GPIO setup: P1-P5 were connected
-straight to GPIO0-GPIO4, and ESP32 GND was not connected to the ice-maker.
-That wiring has been disconnected after the analysis task.
+本文档记录的是已经实测过的直连 GPIO 调试方案：`P1-P5` 直接连接到 `GPIO0-GPIO4`，ESP32 的 GND 不连接到制冰机。分析任务结束后，该接线已经断开。
 
-## Panel Photos
+## 面板照片
 
-![Ice-maker external control panel](docs/images/ice-maker-panel.jpeg)
+![制冰机外部控制面板](docs/images/ice-maker-panel.jpeg)
 
-![Panel PCB front side with LEDs, power/select buttons, and five-wire connector](docs/images/panel-pcb-front.jpeg)
+![控制面板电路板正面：LED、开关/选择按键、五线连接器](docs/images/panel-pcb-front.jpeg)
 
-![Panel PCB back side with LED, button, and resistor branch traces](docs/images/panel-pcb-back.jpeg)
+![控制面板电路板背面：LED、按键、电阻支路走线](docs/images/panel-pcb-back.jpeg)
 
-## Fixed Panel Netlist
+## 固定面板网表
 
 ```text
-P5-P1 : LED5 + R5      ice full
-P5-P2 : LED4 + R4      no water
-P1-P2 : SW1 + R6       power button
-P1-P3 : SW2 + R7       select button
-P3-P4 : R3 + LED3      large ice
-P2-P4 : R2 + LED2      small ice
-P1-P4 : R1 + LED1      power LED
+P5-P1 : LED5 + R5      冰满
+P5-P2 : LED4 + R4      缺水
+P1-P2 : SW1 + R6       开关按键
+P1-P3 : SW2 + R7       选择按键
+P3-P4 : R3 + LED3      大冰
+P2-P4 : R2 + LED2      小冰
+P1-P4 : R1 + LED1      电源指示灯
 ```
 
-Default ESP32-C3 mapping:
+## 电路图与走线图
+
+下面三张图用于从不同角度理解这块五线面板。
+
+第一张是“网表展开图”，把每条已确认支路单独展开，适合核对连接关系：
+
+![制冰机控制面板等效原理图：网表展开图](docs/images/panel-schematic-expanded.png)
+
+第二张是“单张互连等效原理图”，只保留一套 `P1-P5` 公共节点，适合理解厂家如何用 5 根线同时完成 LED 驱动和按键扫描：
+
+![制冰机五线控制面板互连等效原理图](docs/images/panel-schematic-interconnected.png)
+
+第三张是“PCB 走线示意图”，按背面铜箔视角近似复原，正面元件以镜像投影方式标注。它用于维修和分析，不是可直接投产的 Gerber 文件：
+
+![制冰机控制面板 PCB 走线图](docs/images/panel-pcb-trace.png)
+
+默认 ESP32-C3 映射：
 
 ```text
 P1 -> GPIO0 / ADC1_CH0
@@ -52,38 +66,29 @@ P4 -> GPIO3 / ADC1_CH3
 P5 -> GPIO4 / ADC1_CH4
 ```
 
-If GPIO2 prevents boot, move `P3` to GPIO5 and update `PANEL_PINS` in
-`ice_panel_sniffer.ino` to `{0, 1, 5, 3, 4}`. Treat P3 as a digital-only channel
-in that fallback wiring.
+如果 GPIO2 导致开发板无法启动，可以把 `P3` 改接到 GPIO5，并把 `ice_panel_sniffer.ino` 中的 `PANEL_PINS` 改为 `{0, 1, 5, 3, 4}`。在这种备用接线下，P3 主要按数字通道处理。
 
-## Direct-GPIO Safety Contract
+## 直连 GPIO 安全约定
 
-This direct setup is an accepted-risk, short-duration debug mode. The ESP32-C3
-GPIO input high limit is about `VDD + 0.3 V`; the panel has already shown 4.x V
-node differences. ADC samples are therefore relative correlation data, not
-calibrated panel voltages.
+这个直连方案是“接受风险、短时调试”的模式。ESP32-C3 GPIO 输入高电平上限约为 `VDD + 0.3 V`，而该面板实测节点电压差已经出现过 4.x V。因此 ADC 采样只能作为相对相关性数据，不能当作校准后的真实面板电压。
 
-- Keep ESP32 GND disconnected from the ice-maker.
-- Run the Mac from battery if possible.
-- Keep captures short and stop if ESP32 resets, gets warm, or the ice-maker
-  panel behaves abnormally.
-- The firmware configures all panel pins as floating inputs by default.
-- Active button simulation commands exist for manual tests, but they directly
-  touch the panel lines and are riskier than passive capture.
-- For a safer next revision, add per-node series resistors, clamps, and weak
-  biasing before doing long captures, and use isolated contacts for button
-  simulation.
+- ESP32 GND 不要连接到制冰机。
+- 尽量让 Mac 使用电池供电。
+- 采集时间保持较短；如果 ESP32 重启、发热，或制冰机面板表现异常，立即停止。
+- 固件默认把所有面板引脚配置为浮空输入。
+- 固件提供主动按键模拟命令，便于手动测试；但这些命令会直接接触面板线，比被动采集风险更高。
+- 更安全的后续版本应给每个节点增加串联电阻、钳位和弱偏置；按键模拟应改用隔离触点。
 
-## Dependencies
+## 依赖
 
-Python dependencies are isolated in a dedicated venv:
+Python 依赖使用独立 venv：
 
 ```sh
 /Users/ljzd/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m venv .venv-ice-panel
-.venv-ice-panel/bin/python -m pip install -r ice_panel_sniffer/requirements.txt
+.venv-ice-panel/bin/python -m pip install -r requirements.txt
 ```
 
-Arduino CLI:
+Arduino CLI：
 
 ```sh
 brew install arduino-cli
@@ -91,27 +96,22 @@ arduino-cli core update-index
 arduino-cli core install esp32:esp32
 ```
 
-If the ESP32 core download fails with a transient EOF from GitHub, rerun the last
-command.
+如果 ESP32 core 下载时遇到 GitHub 临时 EOF 错误，重新运行最后一条命令即可。
 
-## Build And Flash
+## 编译与刷机
 
-Before flashing, unplug the ice-maker AC power, wait 30 seconds, and temporarily
-disconnect P1-P5 from the ESP32 side. Flash with only USB-C connected to the Mac.
+刷机前，先拔掉制冰机 AC 电源，等待 30 秒，并临时从 ESP32 一侧断开 `P1-P5`。刷机时只保留 USB-C 连接 Mac。
 
 ```sh
-arduino-cli compile --clean --fqbn esp32:esp32:esp32c3:CDCOnBoot=cdc ice_panel_sniffer
-arduino-cli upload -p /dev/cu.usbmodem1101 --fqbn esp32:esp32:esp32c3:CDCOnBoot=cdc ice_panel_sniffer
+arduino-cli compile --clean --fqbn esp32:esp32:esp32c3:CDCOnBoot=cdc .
+arduino-cli upload -p /dev/cu.usbmodem1101 --fqbn esp32:esp32:esp32c3:CDCOnBoot=cdc .
 ```
 
-After upload, open the serial capture only long enough to confirm the sniffer
-header. Then disconnect the serial program, restore P1-P5 while the ice-maker is
-still off, and only then power the ice-maker back to standby.
+上传完成后，只需短暂打开串口确认 sniffer header 出现。随后关闭串口程序，在制冰机仍断电的情况下恢复 `P1-P5`，最后再给制冰机上电进入待机。
 
-`CDCOnBoot=cdc` is required for this ESP32-C3 Super Mini style board so `Serial`
-uses the USB-C port.
+对于这类 ESP32-C3 Super Mini 开发板，`CDCOnBoot=cdc` 是必要的，这样 `Serial` 才会使用 USB-C 端口。
 
-The firmware prints:
+固件串口输出格式：
 
 ```text
 A,<us>,<p1_raw>,<p2_raw>,<p3_raw>,<p4_raw>,<p5_raw>,<mask>
@@ -119,9 +119,9 @@ E,<us>,<mask>
 H,<us>,<mode>,<mask>
 ```
 
-`mask` uses bit0=P1 through bit4=P5.
+`mask` 使用 bit0=P1 到 bit4=P5。
 
-Firmware serial commands:
+固件串口命令：
 
 ```text
 mode adc
@@ -141,55 +141,53 @@ sw1_hold_od [ms]
 sw1_pair_od [ms]
 ```
 
-Active command meanings:
+主动控制命令含义：
 
 ```text
-sw1_weak 120       P2/GPIO1 input with internal pulldown for 120 ms
-sw1_od 100         P2/GPIO1 open-drain low for 100 ms, then all pins float
-sw1_hold_od 5000   P2/GPIO1 open-drain low for 5 seconds, then all pins float
-sw1_pair_od 80     P1/GPIO0 and P2/GPIO1 open-drain low for 80 ms
-sw2_weak 120       P3/GPIO2 input with internal pulldown for 120 ms
-sw2_od 80          P3/GPIO2 open-drain low for 80 ms, then all pins float
-sw2_hold_od 5000   P3/GPIO2 open-drain low for 5 seconds, then all pins float
-sw2_pair_od 60     P1/GPIO0 and P3/GPIO2 open-drain low for 60 ms
-release            restore all panel pins to floating inputs
+sw1_weak 120       P2/GPIO1 启用内部下拉 120 ms
+sw1_od 100         P2/GPIO1 开漏拉低 100 ms，然后所有引脚恢复浮空
+sw1_hold_od 5000   P2/GPIO1 开漏拉低 5 秒，然后所有引脚恢复浮空
+sw1_pair_od 80     P1/GPIO0 和 P2/GPIO1 开漏拉低 80 ms
+sw2_weak 120       P3/GPIO2 启用内部下拉 120 ms
+sw2_od 80          P3/GPIO2 开漏拉低 80 ms，然后所有引脚恢复浮空
+sw2_hold_od 5000   P3/GPIO2 开漏拉低 5 秒，然后所有引脚恢复浮空
+sw2_pair_od 60     P1/GPIO0 和 P3/GPIO2 开漏拉低 60 ms
+release            把所有面板引脚恢复为浮空输入
 ```
 
-Observed direct-GPIO result:
+已观察到的直连 GPIO 结果：
 
 ```text
-sw2_weak 120       no stable mode change
-sw2_od 80          successfully simulated one select short press
-sw1_od 100         successfully simulated one power short press, running to standby
-sw2_hold_od 5000   successfully toggled UV mode on and off
+sw2_weak 120       未能稳定切换模式
+sw2_od 80          成功模拟一次选择键短按
+sw1_od 100         成功模拟一次开关键短按，从运行切到待机
+sw2_hold_od 5000   成功切换 UV 模式开/关
 ```
 
-Use these as the current working control commands:
+当前可用的控制命令：
 
 ```text
-sw1_od 100         power short press
-sw2_od 80          select short press
-sw2_hold_od 5000   select long press, UV toggle
+sw1_od 100         开关键短按
+sw2_od 80          选择键短按
+sw2_hold_od 5000   选择键长按，切换 UV
 ```
 
-Do not hold the output longer than needed; if anything looks abnormal, run
-`release`, stop the capture, and unplug the ice-maker.
+不要让输出保持时间超过必要长度；如果出现任何异常，先执行 `release`，停止采集，然后拔掉制冰机电源。
 
-`sw1_hold_od 5000` was added during testing after a mistaken request, but it is
-not part of the recommended remote-control interface.
+`sw1_hold_od 5000` 是测试过程中因误操作需求加入的命令，不属于推荐的远程控制接口。
 
-## Capture
+## 采集
 
-List ports:
+列出串口：
 
 ```sh
-.venv-ice-panel/bin/python ice_panel_sniffer/tools/capture_panel.py --list-ports
+.venv-ice-panel/bin/python tools/capture_panel.py --list-ports
 ```
 
-Capture interactive standby ADC data:
+交互式采集待机 ADC 数据：
 
 ```sh
-.venv-ice-panel/bin/python ice_panel_sniffer/tools/capture_panel.py \
+.venv-ice-panel/bin/python tools/capture_panel.py \
   --port /dev/cu.usbmodem1101 \
   --mode adc \
   --adc-us 1000 \
@@ -197,27 +195,27 @@ Capture interactive standby ADC data:
   --label direct_standby_adc
 ```
 
-Capture digital edge changes:
+采集数字边沿变化：
 
 ```sh
-.venv-ice-panel/bin/python ice_panel_sniffer/tools/capture_panel.py \
+.venv-ice-panel/bin/python tools/capture_panel.py \
   --port /dev/cu.usbmodem1101 \
   --mode edge \
   --duration-s 90 \
   --label direct_standby_edge
 ```
 
-Capture button edge changes:
+采集按键边沿变化：
 
 ```sh
-.venv-ice-panel/bin/python ice_panel_sniffer/tools/capture_panel.py \
+.venv-ice-panel/bin/python tools/capture_panel.py \
   --port /dev/cu.usbmodem1101 \
   --mode edge \
   --duration-s 0 \
   --label direct_buttons_edge
 ```
 
-During capture, type these into the terminal and press Enter:
+采集过程中，可以在终端输入这些标记并按 Enter：
 
 ```text
 mark power_led_off
@@ -231,40 +229,35 @@ mark large_led_on
 quit
 ```
 
-Each run writes:
+每次采集会写出：
 
 ```text
-ice_panel_sniffer/captures/<timestamp-label>/raw.csv
-ice_panel_sniffer/captures/<timestamp-label>/events.csv
-ice_panel_sniffer/captures/<timestamp-label>/report.md
-ice_panel_sniffer/captures/<timestamp-label>/*.png
+captures/<timestamp-label>/raw.csv
+captures/<timestamp-label>/events.csv
+captures/<timestamp-label>/report.md
+captures/<timestamp-label>/*.png
 ```
 
-Re-analyze an existing event file:
+重新分析已有事件文件：
 
 ```sh
-.venv-ice-panel/bin/python ice_panel_sniffer/tools/capture_panel.py \
-  --analyze ice_panel_sniffer/captures/<run>/events.csv
+.venv-ice-panel/bin/python tools/capture_panel.py \
+  --analyze captures/<run>/events.csv
 ```
 
-## Live Debug Sequence
+## 实机调试流程
 
-1. Ice-maker unplugged: wait 30 seconds and disconnect P1-P5 at the ESP32 side.
-2. ESP32 only: flash firmware and confirm the serial header appears.
-3. Ice-maker still unplugged: restore `P1-P5 -> GPIO0-GPIO4`; do not connect
-   ESP32 GND.
-4. Power the ice-maker to standby and confirm the original panel still shows
-   slow power LED blinking, with other LEDs off.
-5. Capture standby ADC with `direct_standby_adc`; mark two or three visible
-   power LED on/off transitions.
-6. Capture standby edges for 90 seconds with `direct_standby_edge`.
-7. Capture button edges with `direct_buttons_edge`; press SW1 three times for
-   about 1 second and SW2 three to five times for 0.5-1 second, marking down/up
-   events.
-8. Only if the panel stays normal, capture running ADC for 180 seconds:
+1. 制冰机断电：等待 30 秒，并从 ESP32 一侧断开 `P1-P5`。
+2. 只连接 ESP32：刷入固件并确认串口 header 出现。
+3. 制冰机仍保持断电：恢复 `P1-P5 -> GPIO0-GPIO4`；不要连接 ESP32 GND。
+4. 给制冰机上电进入待机，确认原面板仍表现为电源灯慢闪、其他灯熄灭。
+5. 用 `direct_standby_adc` 采集待机 ADC；标记两到三次肉眼可见的电源灯亮/灭变化。
+6. 用 `direct_standby_edge` 采集 90 秒待机边沿。
+7. 用 `direct_buttons_edge` 采集按键边沿；按 SW1 三次，每次约 1 秒；按 SW2 三到五次，每次 0.5-1 秒，并标记 down/up 事件。
+8. 只有在面板表现正常时，才采集 180 秒运行 ADC：
 
    ```sh
-   .venv-ice-panel/bin/python ice_panel_sniffer/tools/capture_panel.py \
+   .venv-ice-panel/bin/python tools/capture_panel.py \
      --port /dev/cu.usbmodem1101 \
      --mode adc \
      --adc-us 1000 \
@@ -272,67 +265,60 @@ Re-analyze an existing event file:
      --label direct_running_adc
    ```
 
-9. Trigger no-water or ice-full only with short, reversible actions and mark
-   `before_no_water`, `no_water_on`, `before_ice_full`, or `ice_full_on`.
+9. 只用短时、可恢复的方式触发缺水或冰满，并标记 `before_no_water`、`no_water_on`、`before_ice_full` 或 `ice_full_on`。
 
-Abort immediately and unplug the ice-maker if ESP32 repeatedly disconnects,
-resets, warms up, or the ice-maker panel shows stuck LEDs, missed buttons,
-unexpected beeps, or resets.
+如果 ESP32 反复断开、重启、发热，或制冰机面板出现 LED 卡死、按键失灵、异常蜂鸣、主控复位，应立即停止并拔掉制冰机电源。
 
-Expected interpretation:
+预期解释方式：
 
 ```text
-P1-P4 activity -> LED1 power
-P2-P4 activity -> LED2 small ice
-P3-P4 activity -> LED3 large ice
-P5-P2 activity -> LED4 no water
-P5-P1 activity -> LED5 ice full
-P1-P2 changes  -> SW1 power scan
-P1-P3 changes  -> SW2 select scan
+P1-P4 activity -> LED1 电源
+P2-P4 activity -> LED2 小冰
+P3-P4 activity -> LED3 大冰
+P5-P2 activity -> LED4 缺水
+P5-P1 activity -> LED5 冰满
+P1-P2 changes  -> SW1 开关键扫描
+P1-P3 changes  -> SW2 选择键扫描
 ```
 
-## ESPHome Remote-Control Firmware
+## ESPHome 远程控制固件
 
-Use the ESPHome project for Home Assistant integration:
+Home Assistant 集成请使用同级 ESPHome 项目：
 
 ```sh
-.venv-esphome/bin/esphome config ice_panel_esphome/ice-maker.yaml
-.venv-esphome/bin/esphome compile ice_panel_esphome/ice-maker.yaml
-.venv-esphome/bin/esphome upload ice_panel_esphome/ice-maker.yaml --device /dev/cu.usbmodem11301
+cd ../chang_hong_ice_maker_esphome
+.venv-esphome/bin/esphome config chang-hong-ice-maker-esphome.yaml
+.venv-esphome/bin/esphome compile chang-hong-ice-maker-esphome.yaml
+.venv-esphome/bin/esphome upload chang-hong-ice-maker-esphome.yaml --device /dev/cu.usbmodem11301
 ```
 
-The ESPHome firmware exposes:
+ESPHome 固件暴露：
 
 ```text
 Mode select        Off / Small Ice / Large Ice
-UV Toggle button   5-second Select hold, no UV state feedback
+UV Toggle button   5 秒选择键长按，无 UV 状态反馈
 State text sensor  standby/running_large/running_small/starting/stopping/unknown
-Diagnostics        ADC signature, confidence, blink score, ratios, raw P1-P5
+Diagnostics        ADC signature、confidence、blink score、ratios、P1-P5 原始值
 ```
 
-It keeps all P1-P5 GPIOs as floating inputs except during these verified
-open-drain actions:
+除了执行这些已验证的开漏动作时，ESPHome 固件会让所有 `P1-P5` GPIO 保持浮空输入：
 
 ```text
-P2/GPIO1 low for 100 ms    power short press
-P3/GPIO2 low for 80 ms     select short press
-P3/GPIO2 low for 5000 ms   UV toggle
+P2/GPIO1 low for 100 ms    开关键短按
+P3/GPIO2 low for 80 ms     选择键短按
+P3/GPIO2 low for 5000 ms   UV 切换
 ```
 
-The project was compiled successfully with ESPHome `2026.6.2`. If upload fails
-with `No serial data received`, manually enter ESP32-C3 download mode while the
-upload command is waiting:
+该项目已经使用 ESPHome `2026.6.2` 成功编译。如果上传失败并提示 `No serial data received`，可以在上传命令等待期间手动让 ESP32-C3 进入下载模式：
 
 ```text
 hold BOOT -> tap RESET -> release BOOT
 ```
 
-If the board has no RESET button:
+如果开发板没有 RESET 按键：
 
 ```text
 hold BOOT -> reconnect USB -> release BOOT
 ```
 
-The generated `ice_panel_esphome/secrets.yaml` is only a placeholder. Replace
-the Wi-Fi credentials and Home Assistant API/OTA keys before expecting Home
-Assistant discovery or OTA updates to work.
+生成的 `../chang_hong_ice_maker_esphome/secrets.yaml` 只是占位文件。需要先替换 Wi-Fi 凭据以及 Home Assistant API/OTA 密钥，Home Assistant 发现和 OTA 更新才会正常工作。
