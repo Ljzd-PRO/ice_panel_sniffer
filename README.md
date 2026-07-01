@@ -12,6 +12,12 @@
 PANEL_CONTROL_PROTOCOL.md
 ```
 
+## 文档入口
+
+- [English README](README.en.md)：本 README 的英文版，适合英文读者快速了解项目、接线和采集流程。
+- [控制协议总结](PANEL_CONTROL_PROTOCOL.md)：最终可复用的协议参考，包含固定网表、状态签名、扫描频率和已验证的按键模拟命令。
+- [完整逆向分析故事](REVERSE_ENGINEERING_STORY_CN.md)：面向软件开发者的中文长文，完整记录从照片、电压测量、采集失败、实机验证到远程控制成功的全过程。
+
 ## 相关仓库
 
 本仓库专注于电气逆向分析、面板网表、采集工具、原理图和 PCB 走线图。基于已验证协议制作的 ESPHome / Home Assistant 固件实现参考：[chang_hong_ice_maker_esphome](https://github.com/Ljzd-PRO/chang_hong_ice_maker_esphome)。
