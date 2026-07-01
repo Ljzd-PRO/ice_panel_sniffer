@@ -18,6 +18,14 @@ This runbook documents the tested direct-GPIO setup: P1-P5 were connected
 straight to GPIO0-GPIO4, and ESP32 GND was not connected to the ice-maker.
 That wiring has been disconnected after the analysis task.
 
+## Panel Photos
+
+![Ice-maker external control panel](docs/images/ice-maker-panel.jpeg)
+
+![Panel PCB front side with LEDs, power/select buttons, and five-wire connector](docs/images/panel-pcb-front.jpeg)
+
+![Panel PCB back side with LED, button, and resistor branch traces](docs/images/panel-pcb-back.jpeg)
+
 ## Fixed Panel Netlist
 
 ```text
