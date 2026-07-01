@@ -1,5 +1,9 @@
 # ESP32-C3 Ice Panel Sniffer And Control Tool
 
+<p align="center">
+  <img src="docs/images/logo.png" alt="ESP32-C3 Ice Panel Sniffer logo" width="220">
+</p>
+
 ESP32-C3 tooling for reverse-engineering and bench-controlling the five-wire
 ice-maker control panel. The final protocol summary for remote-control software
 is in:
