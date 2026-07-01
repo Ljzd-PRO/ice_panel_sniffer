@@ -52,6 +52,32 @@ Useful examples:
 - `20260628-214710-direct_sw2_hold_5s_uv_adc` and `20260628-214855-direct_sw2_hold_5s_uv_off_adc`: ESP32-simulated 5-second Select holds for UV on/off.
 - `20260628-221419-current_state_check_adc` and `20260628-221633-current_state_check_2_adc`: final state-recognition checks, both confirmed correct on the real machine.
 
+Representative charts are shown below. These are preview images extracted from the generated analysis plots in the archive; the full chart set remains in the raw data package.
+
+**State Signature Comparison**
+
+<img src="docs/images/capture-examples/state-signature-comparison.png" alt="State signature comparison" width="760">
+
+**Standby Capture: `20260628-203622-direct_standby_adc`**
+
+<img src="docs/images/capture-examples/standby-adc-nodes.png" alt="Standby ADC node plot" width="760">
+
+**Large-Ice Running Capture: `20260628-205853-direct_large_normal_adc`**
+
+<img src="docs/images/capture-examples/large-normal-adc-nodes.png" alt="Large-ice running ADC node plot" width="760">
+
+**Manual Select Switch: `20260628-210541-direct_running_select_adc`**
+
+<img src="docs/images/capture-examples/manual-select-large-to-small-adc-nodes.png" alt="Manual Select switch ADC node plot" width="760">
+
+**ESP32-Simulated Select: `20260628-212952-direct_sw2_sim_retry_adc`**
+
+<img src="docs/images/capture-examples/sim-select-large-to-small-adc-nodes.png" alt="ESP32-simulated Select ADC node plot" width="760">
+
+**ESP32-Simulated Power: `20260628-213639-direct_sw1_sim_power_adc`**
+
+<img src="docs/images/capture-examples/sim-power-off-adc-nodes.png" alt="ESP32-simulated Power ADC node plot" width="760">
+
 This runbook documents the tested direct-GPIO setup: P1-P5 were connected
 straight to GPIO0-GPIO4, and ESP32 GND was not connected to the ice-maker.
 That wiring has been disconnected after the analysis task.

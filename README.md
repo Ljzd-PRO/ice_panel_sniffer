@@ -53,6 +53,32 @@ tar -xzf captures/ice_panel_sniffer-captures-20260630-130202.tar.gz
 - `20260628-214710-direct_sw2_hold_5s_uv_adc` 与 `20260628-214855-direct_sw2_hold_5s_uv_off_adc`：ESP32 模拟“选择”长按 5 秒，开启/关闭 UV。
 - `20260628-221419-current_state_check_adc` 与 `20260628-221633-current_state_check_2_adc`：最终状态识别校验，两次判断均被实机验证正确。
 
+代表性图表如下。它们是从压缩包内的自动分析图中抽取出来的预览，完整图表仍在原始数据包中。
+
+**状态签名对比总览**
+
+<img src="docs/images/capture-examples/state-signature-comparison.png" alt="状态签名对比总览" width="760">
+
+**待机采集：`20260628-203622-direct_standby_adc`**
+
+<img src="docs/images/capture-examples/standby-adc-nodes.png" alt="待机 ADC 节点曲线" width="760">
+
+**大冰运行采集：`20260628-205853-direct_large_normal_adc`**
+
+<img src="docs/images/capture-examples/large-normal-adc-nodes.png" alt="大冰运行 ADC 节点曲线" width="760">
+
+**人工选择键切换：`20260628-210541-direct_running_select_adc`**
+
+<img src="docs/images/capture-examples/manual-select-large-to-small-adc-nodes.png" alt="人工选择键切换 ADC 节点曲线" width="760">
+
+**ESP32 模拟选择键：`20260628-212952-direct_sw2_sim_retry_adc`**
+
+<img src="docs/images/capture-examples/sim-select-large-to-small-adc-nodes.png" alt="ESP32 模拟选择键 ADC 节点曲线" width="760">
+
+**ESP32 模拟开关键：`20260628-213639-direct_sw1_sim_power_adc`**
+
+<img src="docs/images/capture-examples/sim-power-off-adc-nodes.png" alt="ESP32 模拟开关键 ADC 节点曲线" width="760">
+
 ## 相关仓库
 
 本仓库专注于电气逆向分析、面板网表、采集工具、原理图和 PCB 走线图。基于已验证协议制作的 ESPHome / Home Assistant 固件实现参考：[chang_hong_ice_maker_esphome](https://github.com/Ljzd-PRO/chang_hong_ice_maker_esphome)。
