@@ -4,6 +4,8 @@
   <img src="docs/images/logo.png" alt="ESP32-C3 Ice Panel Sniffer logo" width="220">
 </p>
 
+Language: [中文](README.md) | English
+
 ESP32-C3 tooling for reverse-engineering and bench-controlling the five-wire
 ice-maker control panel. The final protocol summary for remote-control software
 is in:
@@ -12,11 +14,9 @@ is in:
 ice_panel_sniffer/PANEL_CONTROL_PROTOCOL.md
 ```
 
-The ESPHome/Home Assistant firmware created from the verified protocol is in:
+## Related Repository
 
-```text
-ice_panel_esphome/
-```
+This repository focuses on electrical reverse engineering, the panel netlist, capture tooling, schematics, and PCB trace diagrams. For the ESPHome / Home Assistant firmware implementation built from the verified protocol, see [chang_hong_ice_maker_esphome](https://github.com/Ljzd-PRO/chang_hong_ice_maker_esphome).
 
 This runbook documents the tested direct-GPIO setup: P1-P5 were connected
 straight to GPIO0-GPIO4, and ESP32 GND was not connected to the ice-maker.

@@ -12,11 +12,9 @@
 PANEL_CONTROL_PROTOCOL.md
 ```
 
-基于已验证协议制作的 ESPHome / Home Assistant 固件位于同级仓库：
+## 相关仓库
 
-```text
-../chang_hong_ice_maker_esphome/
-```
+本仓库专注于电气逆向分析、面板网表、采集工具、原理图和 PCB 走线图。基于已验证协议制作的 ESPHome / Home Assistant 固件实现参考：[chang_hong_ice_maker_esphome](https://github.com/Ljzd-PRO/chang_hong_ice_maker_esphome)。
 
 本文档记录的是已经实测过的直连 GPIO 调试方案：`P1-P5` 直接连接到 `GPIO0-GPIO4`，ESP32 的 GND 不连接到制冰机。分析任务结束后，该接线已经断开。
 
