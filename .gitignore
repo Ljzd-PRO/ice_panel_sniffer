@@ -1,5 +1,6 @@
 captures/*
 !captures/.gitkeep
+!captures/*.tar.gz
 .DS_Store
 **/.DS_Store
 *.bin

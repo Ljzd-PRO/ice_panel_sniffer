@@ -18,6 +18,40 @@ ice_panel_sniffer/PANEL_CONTROL_PROTOCOL.md
 
 This repository focuses on electrical reverse engineering, the panel netlist, capture tooling, schematics, and PCB trace diagrams. For the ESPHome / Home Assistant firmware implementation built from the verified protocol, see [chang_hong_ice_maker_esphome](https://github.com/Ljzd-PRO/chang_hong_ice_maker_esphome).
 
+## Raw Capture Data
+
+The original ESP32-C3 capture archive from the reverse-engineering session is kept at:
+
+```text
+captures/ice_panel_sniffer-captures-20260630-130202.tar.gz
+```
+
+The archive is about 32 MB compressed and about 183 MB after extraction. It contains 17 capture runs. A typical run includes:
+
+```text
+raw.csv       raw ESP32 serial output
+events.csv    manual markers and firmware events
+report.md     generated analysis report
+*.png         ADC plots, pair-difference plots, and state statistics
+```
+
+Extract it with:
+
+```sh
+tar -xzf captures/ice_panel_sniffer-captures-20260630-130202.tar.gz
+```
+
+Useful examples:
+
+- `20260628-203622-direct_standby_adc`: standby, slow power LED blink; confirms the `MHMHH + blink` standby logic.
+- `20260628-205853-direct_large_normal_adc`: large-ice running; confirms the `0HHHH` large-ice signature.
+- `20260628-210541-direct_running_select_adc`: manual Select press from large ice to small ice.
+- `20260628-211027-direct_running_select_back_adc`: manual Select press from small ice back to large ice.
+- `20260628-212952-direct_sw2_sim_retry_adc` and `20260628-213241-direct_sw2_sim_back_adc`: ESP32-simulated Select short presses that successfully switched ice size.
+- `20260628-213639-direct_sw1_sim_power_adc`: ESP32-simulated Power short press that returned the machine to standby.
+- `20260628-214710-direct_sw2_hold_5s_uv_adc` and `20260628-214855-direct_sw2_hold_5s_uv_off_adc`: ESP32-simulated 5-second Select holds for UV on/off.
+- `20260628-221419-current_state_check_adc` and `20260628-221633-current_state_check_2_adc`: final state-recognition checks, both confirmed correct on the real machine.
+
 This runbook documents the tested direct-GPIO setup: P1-P5 were connected
 straight to GPIO0-GPIO4, and ESP32 GND was not connected to the ice-maker.
 That wiring has been disconnected after the analysis task.

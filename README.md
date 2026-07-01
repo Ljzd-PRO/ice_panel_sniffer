@@ -17,6 +17,41 @@ PANEL_CONTROL_PROTOCOL.md
 - [English README](README.en.md)：本 README 的英文版，适合英文读者快速了解项目、接线和采集流程。
 - [控制协议总结](PANEL_CONTROL_PROTOCOL.md)：最终可复用的协议参考，包含固定网表、状态签名、扫描频率和已验证的按键模拟命令。
 - [完整逆向分析故事](REVERSE_ENGINEERING_STORY_CN.md)：面向软件开发者的中文长文，完整记录从照片、电压测量、采集失败、实机验证到远程控制成功的全过程。
+- [ESP32 原始采集数据包](captures/ice_panel_sniffer-captures-20260630-130202.tar.gz)：包含本次逆向中采集到的串口原始数据、事件标记、自动报告和图表。
+
+## 原始采集数据
+
+本仓库保留了本次实验的 ESP32-C3 原始采集归档：
+
+```text
+captures/ice_panel_sniffer-captures-20260630-130202.tar.gz
+```
+
+归档压缩后约 32 MB，解压后约 183 MB。里面包含 17 次采集，每次采集通常包括：
+
+```text
+raw.csv       ESP32 串口原始数据
+events.csv    手动标记和固件事件
+report.md     自动分析报告
+*.png         ADC 曲线、差分曲线、状态统计图
+```
+
+解压示例：
+
+```sh
+tar -xzf captures/ice_panel_sniffer-captures-20260630-130202.tar.gz
+```
+
+典型数据案例：
+
+- `20260628-203622-direct_standby_adc`：待机状态，电源灯慢闪；用于确认 `MHMHH + 慢闪` 的待机识别逻辑。
+- `20260628-205853-direct_large_normal_adc`：大冰运行状态；用于确认 `0HHHH` 大冰签名。
+- `20260628-210541-direct_running_select_adc`：人工按“选择”后从大冰切到小冰；用于观察模式切换过程。
+- `20260628-211027-direct_running_select_back_adc`：从小冰切回大冰；用于验证反向切换。
+- `20260628-212952-direct_sw2_sim_retry_adc` 与 `20260628-213241-direct_sw2_sim_back_adc`：ESP32 模拟“选择”短按成功切换大小冰。
+- `20260628-213639-direct_sw1_sim_power_adc`：ESP32 模拟“开关”短按，使机器回到待机。
+- `20260628-214710-direct_sw2_hold_5s_uv_adc` 与 `20260628-214855-direct_sw2_hold_5s_uv_off_adc`：ESP32 模拟“选择”长按 5 秒，开启/关闭 UV。
+- `20260628-221419-current_state_check_adc` 与 `20260628-221633-current_state_check_2_adc`：最终状态识别校验，两次判断均被实机验证正确。
 
 ## 相关仓库
 
