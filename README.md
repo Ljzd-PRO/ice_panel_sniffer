@@ -1,7 +1,7 @@
 # ESP32-C3 制冰机面板嗅探与控制工具
 
 <p align="center">
-  <img src="docs/images/logo.png" alt="ESP32-C3 制冰机面板嗅探工具 logo" width="220">
+  <img src="docs/images/logo.jpeg" alt="ESP32-C3 制冰机面板嗅探工具 logo" width="220">
 </p>
 
 语言：中文 | [English](README.en.md)

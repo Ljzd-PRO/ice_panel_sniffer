@@ -1,7 +1,7 @@
 # ESP32-C3 Ice Panel Sniffer And Control Tool
 
 <p align="center">
-  <img src="docs/images/logo.png" alt="ESP32-C3 Ice Panel Sniffer logo" width="220">
+  <img src="docs/images/logo.jpeg" alt="ESP32-C3 Ice Panel Sniffer logo" width="220">
 </p>
 
 Language: [中文](README.md) | English
