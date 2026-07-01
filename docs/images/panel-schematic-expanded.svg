@@ -1,0 +1,206 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1320" viewBox="0 0 1900 1320">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .title { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 34px; font-weight: 700; fill: #111827; }
+      .subtitle { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 18px; fill: #4b5563; }
+      .section { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 22px; font-weight: 700; fill: #111827; }
+      .label { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 17px; fill: #111827; }
+      .small { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 14px; fill: #4b5563; }
+      .pin { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 18px; font-weight: 700; fill: #111827; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 16px; fill: #111827; }
+      .wire { stroke: #111827; stroke-width: 3; stroke-linecap: round; fill: none; }
+      .thin-wire { stroke: #111827; stroke-width: 2.2; stroke-linecap: round; fill: none; }
+      .component { stroke: #111827; stroke-width: 2.6; fill: #ffffff; }
+      .component-fill { fill: #f9fafb; stroke: #111827; stroke-width: 2.6; }
+      .terminal { fill: #ffffff; stroke: #111827; stroke-width: 2.8; }
+      .node-tag { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.5; }
+      .card { fill: #f8fafc; stroke: #d1d5db; stroke-width: 1.5; }
+      .dash { stroke: #9ca3af; stroke-width: 1.5; stroke-dasharray: 6 6; fill: none; }
+      .muted-line { stroke: #d1d5db; stroke-width: 1.5; fill: none; }
+      .led-arrow { stroke: #111827; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .callout { fill: #fff7ed; stroke: #fdba74; stroke-width: 1.4; }
+    </style>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 9 4.5 L 0 9 z" fill="#111827"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1900" height="1320"/>
+
+  <text class="title" x="950" y="58" text-anchor="middle">制冰机控制面板等效原理图</text>
+  <text class="subtitle" x="950" y="88" text-anchor="middle">5 线面板：5 个 LED 指示灯 + 2 个按键，基于已确认网表绘制</text>
+  <line class="muted-line" x1="90" y1="112" x2="1810" y2="112"/>
+
+  <rect class="callout" x="112" y="132" width="1676" height="66" rx="10"/>
+  <text class="label" x="136" y="160">说明：这是“等效电路图”，用于表达 P1-P5 与各元件之间的电气连接关系，不表示 PCB 上的物理走线位置。</text>
+  <text class="small" x="136" y="184">LED 极性按支路方向作示意；若需精确极性，应以 PCB 丝印和实测为准。电阻阻值未在本次逆向中确认，因此只标 R1-R7。</text>
+
+  <g id="connector">
+    <text class="section" x="112" y="248">CZ27 / 5P 面板接口</text>
+    <rect class="card" x="112" y="270" width="470" height="190" rx="12"/>
+    <g transform="translate(140,300)">
+      <rect class="component-fill" x="0" y="0" width="90" height="132" rx="8"/>
+      <circle class="terminal" cx="24" cy="20" r="7"/><text class="pin" x="46" y="26">P1</text><text class="small" x="114" y="26">GPIO0 / ADC</text>
+      <circle class="terminal" cx="24" cy="43" r="7"/><text class="pin" x="46" y="49">P2</text><text class="small" x="114" y="49">GPIO1 / ADC</text>
+      <circle class="terminal" cx="24" cy="66" r="7"/><text class="pin" x="46" y="72">P3</text><text class="small" x="114" y="72">GPIO2 / ADC</text>
+      <circle class="terminal" cx="24" cy="89" r="7"/><text class="pin" x="46" y="95">P4</text><text class="small" x="114" y="95">GPIO3 / ADC</text>
+      <circle class="terminal" cx="24" cy="112" r="7"/><text class="pin" x="46" y="118">P5</text><text class="small" x="114" y="118">GPIO4 / ADC</text>
+      <text class="small" x="0" y="158">P1-P5 为外部五根线，ESP32 仅用于本次采样和模拟控制。</text>
+    </g>
+  </g>
+
+  <g id="legend">
+    <text class="section" x="690" y="248">图例</text>
+    <rect class="card" x="690" y="270" width="1098" height="190" rx="12"/>
+    <g transform="translate(724,316)">
+      <line class="wire" x1="0" y1="0" x2="82" y2="0"/>
+      <rect class="component" x="82" y="-18" width="96" height="36" rx="4"/>
+      <line class="wire" x1="178" y1="0" x2="250" y2="0"/>
+      <text class="small" x="276" y="6">电阻 / 限流或扫描电阻</text>
+
+      <g transform="translate(0,54)">
+        <line class="wire" x1="0" y1="0" x2="82" y2="0"/>
+        <path class="component" d="M82,-24 L82,24 L124,0 Z"/>
+        <line class="component" x1="134" y1="-28" x2="134" y2="28"/>
+        <line class="wire" x1="134" y1="0" x2="250" y2="0"/>
+        <line class="led-arrow" x1="102" y1="-34" x2="126" y2="-58"/>
+        <line class="led-arrow" x1="120" y1="-28" x2="144" y2="-52"/>
+        <text class="small" x="276" y="6">LED 指示灯</text>
+      </g>
+
+      <g transform="translate(0,110)">
+        <line class="wire" x1="0" y1="0" x2="82" y2="0"/>
+        <circle class="component" cx="94" cy="0" r="6"/>
+        <circle class="component" cx="174" cy="0" r="6"/>
+        <line class="thin-wire" x1="100" y1="-2" x2="154" y2="-30"/>
+        <line class="wire" x1="180" y1="0" x2="250" y2="0"/>
+        <text class="small" x="276" y="6">常开瞬时按键，按下时闭合</text>
+      </g>
+    </g>
+  </g>
+
+  <text class="section" x="112" y="520">面板网表等效支路</text>
+  <rect class="card" x="112" y="544" width="1676" height="710" rx="14"/>
+
+  <!-- Row helper coordinates: left terminal x=190, right terminal x=1360 -->
+
+  <g id="row-led5" transform="translate(0,590)">
+    <text class="label" x="138" y="6" text-anchor="end">冰满</text>
+    <circle class="terminal" cx="190" cy="0" r="8"/><text class="pin" x="190" y="-18" text-anchor="middle">P5</text>
+    <line class="wire" x1="198" y1="0" x2="480" y2="0"/>
+    <path class="component" d="M480,-25 L480,25 L524,0 Z"/>
+    <line class="component" x1="536" y1="-30" x2="536" y2="30"/>
+    <line class="led-arrow" x1="500" y1="-32" x2="526" y2="-50"/>
+    <line class="led-arrow" x1="520" y1="-26" x2="546" y2="-44"/>
+    <text class="label" x="508" y="44" text-anchor="middle">LED5</text>
+    <line class="wire" x1="536" y1="0" x2="820" y2="0"/>
+    <rect class="component" x="820" y="-18" width="120" height="36" rx="4"/>
+    <text class="label" x="880" y="6" text-anchor="middle">R5</text>
+    <line class="wire" x1="940" y1="0" x2="1352" y2="0"/>
+    <circle class="terminal" cx="1360" cy="0" r="8"/><text class="pin" x="1360" y="-18" text-anchor="middle">P1</text>
+    <text class="mono" x="1430" y="6">P5 -- LED5 -- R5 -- P1</text>
+  </g>
+
+  <g id="row-led4" transform="translate(0,690)">
+    <text class="label" x="138" y="6" text-anchor="end">缺水</text>
+    <circle class="terminal" cx="190" cy="0" r="8"/><text class="pin" x="190" y="-18" text-anchor="middle">P5</text>
+    <line class="wire" x1="198" y1="0" x2="480" y2="0"/>
+    <path class="component" d="M480,-25 L480,25 L524,0 Z"/>
+    <line class="component" x1="536" y1="-30" x2="536" y2="30"/>
+    <line class="led-arrow" x1="500" y1="-32" x2="526" y2="-50"/>
+    <line class="led-arrow" x1="520" y1="-26" x2="546" y2="-44"/>
+    <text class="label" x="508" y="44" text-anchor="middle">LED4</text>
+    <line class="wire" x1="536" y1="0" x2="820" y2="0"/>
+    <rect class="component" x="820" y="-18" width="120" height="36" rx="4"/>
+    <text class="label" x="880" y="6" text-anchor="middle">R4</text>
+    <line class="wire" x1="940" y1="0" x2="1352" y2="0"/>
+    <circle class="terminal" cx="1360" cy="0" r="8"/><text class="pin" x="1360" y="-18" text-anchor="middle">P2</text>
+    <text class="mono" x="1430" y="6">P5 -- LED4 -- R4 -- P2</text>
+  </g>
+
+  <g id="row-sw1" transform="translate(0,790)">
+    <text class="label" x="138" y="6" text-anchor="end">开关键</text>
+    <circle class="terminal" cx="190" cy="0" r="8"/><text class="pin" x="190" y="-18" text-anchor="middle">P1</text>
+    <line class="wire" x1="198" y1="0" x2="480" y2="0"/>
+    <circle class="component" cx="492" cy="0" r="6"/>
+    <circle class="component" cx="572" cy="0" r="6"/>
+    <line class="thin-wire" x1="498" y1="-2" x2="552" y2="-30"/>
+    <text class="label" x="532" y="44" text-anchor="middle">SW1</text>
+    <line class="wire" x1="578" y1="0" x2="820" y2="0"/>
+    <rect class="component" x="820" y="-18" width="120" height="36" rx="4"/>
+    <text class="label" x="880" y="6" text-anchor="middle">R6</text>
+    <line class="wire" x1="940" y1="0" x2="1352" y2="0"/>
+    <circle class="terminal" cx="1360" cy="0" r="8"/><text class="pin" x="1360" y="-18" text-anchor="middle">P2</text>
+    <text class="mono" x="1430" y="6">P1 -- SW1 -- R6 -- P2</text>
+  </g>
+
+  <g id="row-sw2" transform="translate(0,890)">
+    <text class="label" x="138" y="6" text-anchor="end">选择键</text>
+    <circle class="terminal" cx="190" cy="0" r="8"/><text class="pin" x="190" y="-18" text-anchor="middle">P1</text>
+    <line class="wire" x1="198" y1="0" x2="480" y2="0"/>
+    <circle class="component" cx="492" cy="0" r="6"/>
+    <circle class="component" cx="572" cy="0" r="6"/>
+    <line class="thin-wire" x1="498" y1="-2" x2="552" y2="-30"/>
+    <text class="label" x="532" y="44" text-anchor="middle">SW2</text>
+    <line class="wire" x1="578" y1="0" x2="820" y2="0"/>
+    <rect class="component" x="820" y="-18" width="120" height="36" rx="4"/>
+    <text class="label" x="880" y="6" text-anchor="middle">R7</text>
+    <line class="wire" x1="940" y1="0" x2="1352" y2="0"/>
+    <circle class="terminal" cx="1360" cy="0" r="8"/><text class="pin" x="1360" y="-18" text-anchor="middle">P3</text>
+    <text class="mono" x="1430" y="6">P1 -- SW2 -- R7 -- P3</text>
+  </g>
+
+  <g id="row-led3" transform="translate(0,990)">
+    <text class="label" x="138" y="6" text-anchor="end">大冰</text>
+    <circle class="terminal" cx="190" cy="0" r="8"/><text class="pin" x="190" y="-18" text-anchor="middle">P3</text>
+    <line class="wire" x1="198" y1="0" x2="460" y2="0"/>
+    <rect class="component" x="460" y="-18" width="120" height="36" rx="4"/>
+    <text class="label" x="520" y="6" text-anchor="middle">R3</text>
+    <line class="wire" x1="580" y1="0" x2="820" y2="0"/>
+    <path class="component" d="M820,-25 L820,25 L864,0 Z"/>
+    <line class="component" x1="876" y1="-30" x2="876" y2="30"/>
+    <line class="led-arrow" x1="840" y1="-32" x2="866" y2="-50"/>
+    <line class="led-arrow" x1="860" y1="-26" x2="886" y2="-44"/>
+    <text class="label" x="848" y="44" text-anchor="middle">LED3</text>
+    <line class="wire" x1="876" y1="0" x2="1352" y2="0"/>
+    <circle class="terminal" cx="1360" cy="0" r="8"/><text class="pin" x="1360" y="-18" text-anchor="middle">P4</text>
+    <text class="mono" x="1430" y="6">P3 -- R3 -- LED3 -- P4</text>
+  </g>
+
+  <g id="row-led2" transform="translate(0,1090)">
+    <text class="label" x="138" y="6" text-anchor="end">小冰</text>
+    <circle class="terminal" cx="190" cy="0" r="8"/><text class="pin" x="190" y="-18" text-anchor="middle">P2</text>
+    <line class="wire" x1="198" y1="0" x2="460" y2="0"/>
+    <rect class="component" x="460" y="-18" width="120" height="36" rx="4"/>
+    <text class="label" x="520" y="6" text-anchor="middle">R2</text>
+    <line class="wire" x1="580" y1="0" x2="820" y2="0"/>
+    <path class="component" d="M820,-25 L820,25 L864,0 Z"/>
+    <line class="component" x1="876" y1="-30" x2="876" y2="30"/>
+    <line class="led-arrow" x1="840" y1="-32" x2="866" y2="-50"/>
+    <line class="led-arrow" x1="860" y1="-26" x2="886" y2="-44"/>
+    <text class="label" x="848" y="44" text-anchor="middle">LED2</text>
+    <line class="wire" x1="876" y1="0" x2="1352" y2="0"/>
+    <circle class="terminal" cx="1360" cy="0" r="8"/><text class="pin" x="1360" y="-18" text-anchor="middle">P4</text>
+    <text class="mono" x="1430" y="6">P2 -- R2 -- LED2 -- P4</text>
+  </g>
+
+  <g id="row-led1" transform="translate(0,1190)">
+    <text class="label" x="138" y="6" text-anchor="end">电源</text>
+    <circle class="terminal" cx="190" cy="0" r="8"/><text class="pin" x="190" y="-18" text-anchor="middle">P1</text>
+    <line class="wire" x1="198" y1="0" x2="460" y2="0"/>
+    <rect class="component" x="460" y="-18" width="120" height="36" rx="4"/>
+    <text class="label" x="520" y="6" text-anchor="middle">R1</text>
+    <line class="wire" x1="580" y1="0" x2="820" y2="0"/>
+    <path class="component" d="M820,-25 L820,25 L864,0 Z"/>
+    <line class="component" x1="876" y1="-30" x2="876" y2="30"/>
+    <line class="led-arrow" x1="840" y1="-32" x2="866" y2="-50"/>
+    <line class="led-arrow" x1="860" y1="-26" x2="886" y2="-44"/>
+    <text class="label" x="848" y="44" text-anchor="middle">LED1</text>
+    <line class="wire" x1="876" y1="0" x2="1352" y2="0"/>
+    <circle class="terminal" cx="1360" cy="0" r="8"/><text class="pin" x="1360" y="-18" text-anchor="middle">P4</text>
+    <text class="mono" x="1430" y="6">P1 -- R1 -- LED1 -- P4</text>
+  </g>
+
+  <text class="small" x="112" y="1290">备注：SW1/SW2 均为常开瞬时按键；按下时对应支路闭合。本图用于表达最终确认的连接结构，非生产用安全隔离方案。</text>
+</svg>

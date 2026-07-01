@@ -1,0 +1,274 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1450" viewBox="0 0 2200 1450">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .title { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 36px; font-weight: 700; fill: #111827; }
+      .subtitle { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 18px; fill: #4b5563; }
+      .section { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 22px; font-weight: 700; fill: #111827; }
+      .label { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 17px; fill: #111827; }
+      .label-bold { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 17px; font-weight: 700; fill: #111827; }
+      .small { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 14px; fill: #4b5563; }
+      .tiny { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 12px; fill: #6b7280; }
+      .pin { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 18px; font-weight: 700; fill: #111827; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 14px; fill: #111827; }
+      .board { fill: #14966e; stroke: #0f6b53; stroke-width: 4; }
+      .mask-shadow { fill: none; stroke: #0b5f49; stroke-width: 24; stroke-linecap: round; stroke-linejoin: round; opacity: 0.88; }
+      .trace { fill: none; stroke: #104c3b; stroke-width: 16; stroke-linecap: round; stroke-linejoin: round; }
+      .trace-thin { fill: none; stroke: #104c3b; stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
+      .trace-p1 { stroke: #2563eb; }
+      .trace-p2 { stroke: #f97316; }
+      .trace-p3 { stroke: #7c3aed; }
+      .trace-p4 { stroke: #0f766e; }
+      .trace-p5 { stroke: #dc2626; }
+      .pad { fill: #f8d66d; stroke: #7a5b14; stroke-width: 3; }
+      .hole { fill: #f8fafc; stroke: #374151; stroke-width: 2; }
+      .smd-pad { fill: #e8c75b; stroke: #7a5b14; stroke-width: 2.4; }
+      .smd-body { fill: #1f2937; stroke: #111827; stroke-width: 2.2; }
+      .component-outline { fill: rgba(255,255,255,0.18); stroke: #e5e7eb; stroke-width: 2; stroke-dasharray: 7 6; }
+      .button-body { fill: rgba(255,255,255,0.16); stroke: #e5e7eb; stroke-width: 2.4; stroke-dasharray: 8 6; }
+      .button-pad { fill: #f8d66d; stroke: #7a5b14; stroke-width: 2.4; }
+      .mount { fill: #e5e7eb; stroke: #374151; stroke-width: 3; }
+      .mount-hole { fill: #ffffff; stroke: #9ca3af; stroke-width: 2; }
+      .net-tag { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.6; }
+      .callout { fill: #fff7ed; stroke: #fdba74; stroke-width: 1.4; }
+      .legend-card { fill: #ffffff; stroke: #d1d5db; stroke-width: 1.4; }
+      .front-ink { fill: #f9fafb; opacity: 0.35; stroke: #ffffff; stroke-width: 1.5; }
+      .ink { fill: #e5e7eb; opacity: 0.75; }
+      .muted-line { stroke: #d1d5db; stroke-width: 1.5; fill: none; }
+      .leader { stroke: #111827; stroke-width: 1.7; stroke-linecap: round; fill: none; marker-end: url(#arrow); }
+      .branch { stroke: #111827; stroke-width: 2; fill: none; }
+    </style>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 L8 4 L0 8 z" fill="#111827"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="2200" height="1450"/>
+  <text class="title" x="1100" y="58" text-anchor="middle">制冰机控制面板 PCB 走线图</text>
+  <text class="subtitle" x="1100" y="90" text-anchor="middle">背面铜箔视角：正面元件位置已镜像投影，走线按照片与已确认网表近似复原</text>
+  <line class="muted-line" x1="92" y1="116" x2="2108" y2="116"/>
+
+  <rect class="callout" x="110" y="136" width="1980" height="68" rx="10"/>
+  <text class="label" x="136" y="165">说明：这是维修/分析用 PCB 走线示意图，不是可直接投产的 Gerber 文件；照片存在透视畸变，元件坐标和线宽为近似。</text>
+  <text class="small" x="136" y="188">深色线为背面铜箔走线，金色为焊盘；浅色虚线框表示正面元件在背面视角下的投影。</text>
+
+  <!-- Board outline -->
+  <g id="pcb">
+    <rect class="board" x="110" y="248" width="1980" height="790" rx="18"/>
+
+    <!-- Mounting holes and large panel holes -->
+    <g id="mechanical">
+      <circle class="mount" cx="160" cy="306" r="24"/><circle class="mount-hole" cx="160" cy="306" r="12"/>
+      <circle class="mount" cx="2040" cy="306" r="24"/><circle class="mount-hole" cx="2040" cy="306" r="12"/>
+      <circle class="mount" cx="160" cy="988" r="18"/><circle class="mount-hole" cx="160" cy="988" r="8"/>
+      <circle class="mount" cx="2040" cy="988" r="18"/><circle class="mount-hole" cx="2040" cy="988" r="8"/>
+      <circle class="mount" cx="430" cy="705" r="28"/><circle class="mount-hole" cx="430" cy="705" r="18"/>
+      <circle class="mount" cx="980" cy="480" r="31"/><circle class="mount-hole" cx="980" cy="480" r="20"/>
+      <circle class="mount" cx="1650" cy="765" r="28"/><circle class="mount-hole" cx="1650" cy="765" r="18"/>
+      <rect class="front-ink" x="1080" y="332" width="165" height="118" rx="4"/>
+    </g>
+
+    <!-- Copper traces under solder mask. Colors are subtle net hints; all are copper in the real board. -->
+    <g id="copper-traces">
+      <!-- P5: connector to LED5 and LED4 common side -->
+      <path class="mask-shadow trace-p5" d="M1960 340 L1840 340 L1840 300 L1320 300 L1320 340 M1840 340 L1708 340"/>
+      <path class="trace trace-p5" d="M1960 340 L1840 340 L1840 300 L1320 300 L1320 340 M1840 340 L1708 340"/>
+
+      <!-- P1: main vertical bus to R5, SW1, SW2, R1 and connector -->
+      <path class="mask-shadow trace-p1" d="M1960 455 L1496 455 L1496 430 L1432 430 M1496 455 L1496 605 L1298 605 L1298 675 L1194 675 M1496 605 L1080 605 L1080 660 L870 660 M1080 605 L1080 900 L938 900"/>
+      <path class="trace trace-p1" d="M1960 455 L1496 455 L1496 430 L1432 430 M1496 455 L1496 605 L1298 605 L1298 675 L1194 675 M1496 605 L1080 605 L1080 660 L870 660 M1080 605 L1080 900 L938 900"/>
+
+      <!-- P3: connector to R3 and R7 -->
+      <path class="mask-shadow trace-p3" d="M1960 570 L1415 570 L1415 520 L430 520 M1415 570 L925 570 L925 610"/>
+      <path class="trace trace-p3" d="M1960 570 L1415 570 L1415 520 L430 520 M1415 570 L925 570 L925 610"/>
+
+      <!-- P2: connector to R4, R2 and R6 -->
+      <path class="mask-shadow trace-p2" d="M1960 685 L1778 685 L1778 520 M1778 685 L1298 685 M1778 685 L736 685 L736 520"/>
+      <path class="trace trace-p2" d="M1960 685 L1778 685 L1778 520 M1778 685 L1298 685 M1778 685 L736 685 L736 520"/>
+
+      <!-- P4: long lower common trace to LED1, LED2, LED3 and connector -->
+      <path class="mask-shadow trace-p4" d="M1960 800 L1960 940 L250 940 L250 380 M250 940 L600 940 L600 380 M600 940 L900 940 L900 380"/>
+      <path class="trace trace-p4" d="M1960 800 L1960 940 L250 940 L250 380 M250 940 L600 940 L600 380 M600 940 L900 940 L900 380"/>
+
+      <!-- Local component-to-component copper sections -->
+      <path class="mask-shadow" d="M1270 340 L1270 430 L1388 430"/>
+      <path class="trace" d="M1270 340 L1270 430 L1388 430"/>
+
+      <path class="mask-shadow" d="M1658 340 L1658 500 L1734 500"/>
+      <path class="trace" d="M1658 340 L1658 500 L1734 500"/>
+
+      <path class="mask-shadow" d="M338 380 L338 500 L336 500"/>
+      <path class="trace" d="M338 380 L338 500 L336 500"/>
+
+      <path class="mask-shadow" d="M552 380 L552 520 L642 520"/>
+      <path class="trace" d="M552 380 L552 520 L642 520"/>
+
+      <path class="mask-shadow" d="M852 380 L852 900 L894 900"/>
+      <path class="trace" d="M852 380 L852 900 L894 900"/>
+
+      <path class="mask-shadow" d="M870 660 L815 660 L815 610"/>
+      <path class="trace" d="M870 660 L815 660 L815 610"/>
+
+      <path class="mask-shadow" d="M1194 675 L1160 675 L1160 742 L1254 742 L1254 690"/>
+      <path class="trace" d="M1194 675 L1160 675 L1160 742 L1254 742 L1254 690"/>
+    </g>
+
+    <!-- Connector pads -->
+    <g id="connector">
+      <rect class="component-outline" x="1888" y="285" width="130" height="570" rx="10"/>
+      <text class="label-bold" x="1916" y="282">CZ27 / 5P</text>
+      <text class="tiny" x="1912" y="872">背面焊盘视角</text>
+      <g transform="translate(1960,0)">
+        <circle class="pad" cx="0" cy="340" r="18"/><circle class="hole" cx="0" cy="340" r="7"/><text class="pin" x="36" y="347">P5</text>
+        <circle class="pad" cx="0" cy="455" r="18"/><circle class="hole" cx="0" cy="455" r="7"/><text class="pin" x="36" y="462">P1</text>
+        <circle class="pad" cx="0" cy="570" r="18"/><circle class="hole" cx="0" cy="570" r="7"/><text class="pin" x="36" y="577">P3</text>
+        <circle class="pad" cx="0" cy="685" r="18"/><circle class="hole" cx="0" cy="685" r="7"/><text class="pin" x="36" y="692">P2</text>
+        <circle class="pad" cx="0" cy="800" r="18"/><circle class="hole" cx="0" cy="800" r="7"/><text class="pin" x="36" y="807">P4</text>
+      </g>
+    </g>
+
+    <!-- LED through-hole pads and projected LED bodies -->
+    <g id="leds">
+      <g transform="translate(250,340)">
+        <circle class="pad" cx="0" cy="0" r="18"/><circle class="hole" cx="0" cy="0" r="7"/>
+        <circle class="pad" cx="88" cy="0" r="18"/><circle class="hole" cx="88" cy="0" r="7"/>
+        <circle class="front-ink" cx="44" cy="0" r="34"/>
+        <text class="label-bold" x="44" y="-54" text-anchor="middle">LED3</text>
+        <text class="small" x="44" y="-32" text-anchor="middle">大冰</text>
+      </g>
+      <g transform="translate(552,340)">
+        <circle class="pad" cx="0" cy="0" r="18"/><circle class="hole" cx="0" cy="0" r="7"/>
+        <circle class="pad" cx="88" cy="0" r="18"/><circle class="hole" cx="88" cy="0" r="7"/>
+        <circle class="front-ink" cx="44" cy="0" r="34"/>
+        <text class="label-bold" x="44" y="-54" text-anchor="middle">LED2</text>
+        <text class="small" x="44" y="-32" text-anchor="middle">小冰</text>
+      </g>
+      <g transform="translate(852,340)">
+        <circle class="pad" cx="0" cy="0" r="18"/><circle class="hole" cx="0" cy="0" r="7"/>
+        <circle class="pad" cx="88" cy="0" r="18"/><circle class="hole" cx="88" cy="0" r="7"/>
+        <circle class="front-ink" cx="44" cy="0" r="34"/>
+        <text class="label-bold" x="44" y="-54" text-anchor="middle">LED1</text>
+        <text class="small" x="44" y="-32" text-anchor="middle">电源</text>
+      </g>
+      <g transform="translate(1270,340)">
+        <circle class="pad" cx="0" cy="0" r="18"/><circle class="hole" cx="0" cy="0" r="7"/>
+        <circle class="pad" cx="88" cy="0" r="18"/><circle class="hole" cx="88" cy="0" r="7"/>
+        <circle class="front-ink" cx="44" cy="0" r="34"/>
+        <text class="label-bold" x="44" y="-54" text-anchor="middle">LED5</text>
+        <text class="small" x="44" y="-32" text-anchor="middle">冰满</text>
+      </g>
+      <g transform="translate(1620,340)">
+        <circle class="pad" cx="0" cy="0" r="18"/><circle class="hole" cx="0" cy="0" r="7"/>
+        <circle class="pad" cx="88" cy="0" r="18"/><circle class="hole" cx="88" cy="0" r="7"/>
+        <circle class="front-ink" cx="44" cy="0" r="34"/>
+        <text class="label-bold" x="44" y="-54" text-anchor="middle">LED4</text>
+        <text class="small" x="44" y="-32" text-anchor="middle">缺水</text>
+      </g>
+    </g>
+
+    <!-- SMD resistors on back -->
+    <g id="resistors">
+      <g transform="translate(382,500)">
+        <rect class="smd-pad" x="-64" y="-19" width="32" height="38" rx="3"/>
+        <rect class="smd-body" x="-32" y="-22" width="64" height="44" rx="4"/>
+        <rect class="smd-pad" x="32" y="-19" width="32" height="38" rx="3"/>
+        <text class="label-bold" x="0" y="7" text-anchor="middle" fill="#ffffff">R3</text>
+      </g>
+      <g transform="translate(690,520)">
+        <rect class="smd-pad" x="-64" y="-19" width="32" height="38" rx="3"/>
+        <rect class="smd-body" x="-32" y="-22" width="64" height="44" rx="4"/>
+        <rect class="smd-pad" x="32" y="-19" width="32" height="38" rx="3"/>
+        <text class="label-bold" x="0" y="7" text-anchor="middle" fill="#ffffff">R2</text>
+      </g>
+      <g transform="translate(938,900)">
+        <rect class="smd-pad" x="-64" y="-19" width="32" height="38" rx="3"/>
+        <rect class="smd-body" x="-32" y="-22" width="64" height="44" rx="4"/>
+        <rect class="smd-pad" x="32" y="-19" width="32" height="38" rx="3"/>
+        <text class="label-bold" x="0" y="7" text-anchor="middle" fill="#ffffff">R1</text>
+      </g>
+      <g transform="translate(1432,430)">
+        <rect class="smd-pad" x="-64" y="-19" width="32" height="38" rx="3"/>
+        <rect class="smd-body" x="-32" y="-22" width="64" height="44" rx="4"/>
+        <rect class="smd-pad" x="32" y="-19" width="32" height="38" rx="3"/>
+        <text class="label-bold" x="0" y="7" text-anchor="middle" fill="#ffffff">R5</text>
+      </g>
+      <g transform="translate(1778,520)">
+        <rect class="smd-pad" x="-64" y="-19" width="32" height="38" rx="3"/>
+        <rect class="smd-body" x="-32" y="-22" width="64" height="44" rx="4"/>
+        <rect class="smd-pad" x="32" y="-19" width="32" height="38" rx="3"/>
+        <text class="label-bold" x="0" y="7" text-anchor="middle" fill="#ffffff">R4</text>
+      </g>
+      <g transform="translate(860,610)">
+        <rect class="smd-pad" x="-64" y="-19" width="32" height="38" rx="3"/>
+        <rect class="smd-body" x="-32" y="-22" width="64" height="44" rx="4"/>
+        <rect class="smd-pad" x="32" y="-19" width="32" height="38" rx="3"/>
+        <text class="label-bold" x="0" y="7" text-anchor="middle" fill="#ffffff">R7</text>
+      </g>
+      <g transform="translate(1254,690)">
+        <rect class="smd-pad" x="-64" y="-19" width="32" height="38" rx="3"/>
+        <rect class="smd-body" x="-32" y="-22" width="64" height="44" rx="4"/>
+        <rect class="smd-pad" x="32" y="-19" width="32" height="38" rx="3"/>
+        <text class="label-bold" x="0" y="7" text-anchor="middle" fill="#ffffff">R6</text>
+      </g>
+    </g>
+
+    <!-- Front-side button projection and through pads -->
+    <g id="buttons">
+      <g transform="translate(780,660)">
+        <rect class="button-body" x="-85" y="-58" width="170" height="116" rx="8"/>
+        <circle class="button-pad" cx="-70" cy="-38" r="13"/><circle class="button-pad" cx="70" cy="-38" r="13"/>
+        <circle class="button-pad" cx="-70" cy="38" r="13"/><circle class="button-pad" cx="70" cy="38" r="13"/>
+        <rect class="front-ink" x="-36" y="-36" width="72" height="72" rx="10"/>
+        <text class="label-bold" x="0" y="86" text-anchor="middle">SW2 选择</text>
+      </g>
+      <g transform="translate(1160,742)">
+        <rect class="button-body" x="-85" y="-58" width="170" height="116" rx="8"/>
+        <circle class="button-pad" cx="-70" cy="-38" r="13"/><circle class="button-pad" cx="70" cy="-38" r="13"/>
+        <circle class="button-pad" cx="-70" cy="38" r="13"/><circle class="button-pad" cx="70" cy="38" r="13"/>
+        <rect class="front-ink" x="-36" y="-36" width="72" height="72" rx="10"/>
+        <text class="label-bold" x="0" y="86" text-anchor="middle">SW1 开关</text>
+      </g>
+    </g>
+
+    <!-- Net labels on board -->
+    <g id="net-labels">
+      <rect class="net-tag" x="1820" y="308" width="64" height="30" rx="7"/><text class="pin" x="1852" y="330" text-anchor="middle">P5</text>
+      <rect class="net-tag" x="1508" y="422" width="64" height="30" rx="7"/><text class="pin" x="1540" y="444" text-anchor="middle">P1</text>
+      <rect class="net-tag" x="1428" y="536" width="64" height="30" rx="7"/><text class="pin" x="1460" y="558" text-anchor="middle">P3</text>
+      <rect class="net-tag" x="1802" y="648" width="64" height="30" rx="7"/><text class="pin" x="1834" y="670" text-anchor="middle">P2</text>
+      <rect class="net-tag" x="1818" y="902" width="64" height="30" rx="7"/><text class="pin" x="1850" y="924" text-anchor="middle">P4</text>
+    </g>
+
+    <!-- Board silkscreen hints -->
+    <g id="silkscreen">
+      <text class="ink" x="1070" y="548" text-anchor="middle">CDC11134057276</text>
+      <text class="ink" x="1070" y="574" text-anchor="middle">KB-5150  ROHS</text>
+      <text class="ink" x="1880" y="980" transform="rotate(-90 1880 980)">A0076-A3</text>
+    </g>
+  </g>
+
+  <!-- Side legend and notes -->
+  <g id="legend">
+    <rect class="legend-card" x="110" y="1090" width="910" height="210" rx="12"/>
+    <text class="section" x="136" y="1126">图例与读法</text>
+    <line class="trace trace-p1" x1="140" y1="1168" x2="245" y2="1168"/><text class="small" x="272" y="1173">彩色深线：背面铜箔走线，颜色用于区分 P1-P5 网络</text>
+    <circle class="pad" cx="160" cy="1212" r="16"/><circle class="hole" cx="160" cy="1212" r="6"/><text class="small" x="192" y="1217">金色圆形焊盘：LED、接口等通孔焊点</text>
+    <rect class="smd-pad" x="142" y="1248" width="30" height="34" rx="3"/><rect class="smd-body" x="172" y="1246" width="58" height="38" rx="4"/><rect class="smd-pad" x="230" y="1248" width="30" height="34" rx="3"/><text class="small" x="286" y="1272">黑色小矩形：背面 SMD 电阻</text>
+    <rect class="button-body" x="520" y="1190" width="116" height="76" rx="8"/><text class="small" x="660" y="1234">虚线框：正面按键/元件的背面投影</text>
+  </g>
+
+  <g id="netlist">
+    <rect class="legend-card" x="1060" y="1090" width="1030" height="210" rx="12"/>
+    <text class="section" x="1086" y="1126">走线对应的固定网表</text>
+    <text class="mono" x="1088" y="1164">P5-LED5-R5-P1    冰满</text>
+    <text class="mono" x="1088" y="1194">P5-LED4-R4-P2    缺水</text>
+    <text class="mono" x="1088" y="1224">P1-SW1-R6-P2     开关</text>
+    <text class="mono" x="1088" y="1254">P1-SW2-R7-P3     选择</text>
+    <text class="mono" x="1506" y="1164">P3-R3-LED3-P4    大冰</text>
+    <text class="mono" x="1506" y="1194">P2-R2-LED2-P4    小冰</text>
+    <text class="mono" x="1506" y="1224">P1-R1-LED1-P4    电源</text>
+    <text class="small" x="1506" y="1260">接口 P1-P5 排列为本图示意标注；如需维修级排针顺序，应以实测连续性为准。</text>
+  </g>
+
+  <text class="small" x="110" y="1374">备注：本图用于理解厂家如何把 5 根线复用为 LED 驱动和按键扫描网络；若后续制作转接板，需要重新按实物尺寸测量孔距、焊盘尺寸和连接器针序。</text>
+</svg>

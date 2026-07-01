@@ -52,13 +52,19 @@ P1-P4 : R1 + LED1      电源指示灯
 
 ![制冰机控制面板等效原理图：网表展开图](docs/images/panel-schematic-expanded.png)
 
+[SVG 矢量版](docs/images/panel-schematic-expanded.svg)
+
 第二张是“单张互连等效原理图”，只保留一套 `P1-P5` 公共节点，适合理解厂家如何用 5 根线同时完成 LED 驱动和按键扫描：
 
 ![制冰机五线控制面板互连等效原理图](docs/images/panel-schematic-interconnected.png)
 
+[SVG 矢量版](docs/images/panel-schematic-interconnected.svg)
+
 第三张是“PCB 走线示意图”，按背面铜箔视角近似复原，正面元件以镜像投影方式标注。它用于维修和分析，不是可直接投产的 Gerber 文件：
 
 ![制冰机控制面板 PCB 走线图](docs/images/panel-pcb-trace.png)
+
+[SVG 矢量版](docs/images/panel-pcb-trace.svg)
 
 默认 ESP32-C3 映射：
 

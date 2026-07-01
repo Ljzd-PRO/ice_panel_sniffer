@@ -1,0 +1,293 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1500" viewBox="0 0 2200 1500">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .title { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 36px; font-weight: 700; fill: #111827; }
+      .subtitle { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 18px; fill: #4b5563; }
+      .section { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 22px; font-weight: 700; fill: #111827; }
+      .label { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 18px; fill: #111827; }
+      .label-bold { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 18px; font-weight: 700; fill: #111827; }
+      .small { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 14px; fill: #4b5563; }
+      .tiny { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; font-size: 12px; fill: #6b7280; }
+      .pin { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 19px; font-weight: 700; fill: #111827; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 15px; fill: #111827; }
+      .wire { stroke: #111827; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+      .thin-wire { stroke: #111827; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+      .bus { stroke: #111827; stroke-width: 4.2; stroke-linecap: round; fill: none; }
+      .component { stroke: #111827; stroke-width: 2.8; fill: #ffffff; }
+      .component-fill { stroke: #111827; stroke-width: 2.8; fill: #f9fafb; }
+      .terminal { fill: #ffffff; stroke: #111827; stroke-width: 2.8; }
+      .junction { fill: #111827; stroke: #ffffff; stroke-width: 1.4; }
+      .net-tag { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.6; }
+      .card { fill: #f8fafc; stroke: #d1d5db; stroke-width: 1.5; }
+      .callout { fill: #fff7ed; stroke: #fdba74; stroke-width: 1.4; }
+      .legend-card { fill: #ffffff; stroke: #d1d5db; stroke-width: 1.3; }
+      .muted-line { stroke: #d1d5db; stroke-width: 1.5; fill: none; }
+      .no-connect-jump { stroke: #111827; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+      .led-ray { stroke: #111827; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .red-led { fill: #fee2e2; }
+      .green-led { fill: #dcfce7; }
+    </style>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 9 4.5 L 0 9 z" fill="#111827"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="2200" height="1500"/>
+
+  <text class="title" x="1100" y="58" text-anchor="middle">制冰机五线控制面板互连等效原理图</text>
+  <text class="subtitle" x="1100" y="90" text-anchor="middle">单张互连图：P1-P5 作为公共节点，5 个 LED 与 2 个按键跨接在同一组节点之间</text>
+  <line class="muted-line" x1="92" y1="116" x2="2108" y2="116"/>
+
+  <rect class="callout" x="112" y="134" width="1976" height="68" rx="10"/>
+  <text class="label" x="138" y="163">说明：本图表达电气连接关系和扫描等效结构，不表示 PCB 实际物理走线、元件位置或线束真实顺序。</text>
+  <text class="small" x="138" y="187">LED 极性按已确认支路方向作示意；电阻值未在本次逆向中确认，因此保留 R1-R7 标号。</text>
+
+  <rect class="card" x="92" y="226" width="2016" height="1128" rx="16"/>
+
+  <!-- Left connector -->
+  <g id="connector">
+    <text class="section" x="132" y="270">CZ27 / 5P 面板接口</text>
+    <text class="tiny" x="132" y="292">左侧顺序按画面排布，非实物排针顺序</text>
+    <rect class="component-fill" x="130" y="306" width="206" height="910" rx="12"/>
+    <line class="thin-wire" x1="194" y1="306" x2="194" y2="1216"/>
+
+    <g transform="translate(0,320)">
+      <circle class="terminal" cx="320" cy="0" r="8"/>
+      <text class="pin" x="160" y="7">P5</text>
+      <text class="small" x="206" y="6">冰满 / 缺水公共端</text>
+    </g>
+    <g transform="translate(0,450)">
+      <circle class="terminal" cx="320" cy="0" r="8"/>
+      <text class="pin" x="160" y="7">P1</text>
+      <text class="small" x="206" y="6">主公共节点</text>
+    </g>
+    <g transform="translate(0,580)">
+      <circle class="terminal" cx="320" cy="0" r="8"/>
+      <text class="pin" x="160" y="7">P3</text>
+      <text class="small" x="206" y="6">大冰 / 选择</text>
+    </g>
+    <g transform="translate(0,840)">
+      <circle class="terminal" cx="320" cy="0" r="8"/>
+      <text class="pin" x="160" y="7">P2</text>
+      <text class="small" x="206" y="6">小冰 / 缺水 / 开关</text>
+    </g>
+    <g transform="translate(0,1180)">
+      <circle class="terminal" cx="320" cy="0" r="8"/>
+      <text class="pin" x="160" y="7">P4</text>
+      <text class="small" x="206" y="6">三只工作灯公共端</text>
+    </g>
+  </g>
+
+  <!-- Nets / buses -->
+  <g id="net-buses">
+    <line class="bus" x1="500" y1="320" x2="500" y2="640"/>
+    <line class="bus" x1="800" y1="320" x2="800" y2="1110"/>
+    <line class="bus" x1="1180" y1="450" x2="1180" y2="610"/>
+    <line class="bus" x1="1180" y1="640" x2="1180" y2="870"/>
+    <line class="bus" x1="1620" y1="610" x2="1620" y2="1110"/>
+
+    <rect class="net-tag" x="458" y="244" width="84" height="38" rx="8"/>
+    <text class="pin" x="500" y="270" text-anchor="middle">P5</text>
+    <text class="tiny" x="500" y="300" text-anchor="middle">故障灯侧</text>
+
+    <rect class="net-tag" x="758" y="244" width="84" height="38" rx="8"/>
+    <text class="pin" x="800" y="270" text-anchor="middle">P1</text>
+    <text class="tiny" x="800" y="300" text-anchor="middle">主公共节点</text>
+
+    <rect class="net-tag" x="1138" y="372" width="84" height="38" rx="8"/>
+    <text class="pin" x="1180" y="398" text-anchor="middle">P3</text>
+    <text class="tiny" x="1180" y="430" text-anchor="middle">大冰 / 选择</text>
+
+    <rect class="net-tag" x="1138" y="914" width="84" height="38" rx="8"/>
+    <text class="pin" x="1180" y="940" text-anchor="middle">P2</text>
+    <text class="tiny" x="1180" y="972" text-anchor="middle">小冰 / 缺水 / 开关</text>
+
+    <rect class="net-tag" x="1578" y="528" width="84" height="38" rx="8"/>
+    <text class="pin" x="1620" y="554" text-anchor="middle">P4</text>
+    <text class="tiny" x="1620" y="586" text-anchor="middle">工作灯公共端</text>
+  </g>
+
+  <!-- Connector wires with jump-over symbols where they cross another net without connection. -->
+  <g id="connector-wires">
+    <line class="wire" x1="328" y1="320" x2="500" y2="320"/>
+
+    <path class="no-connect-jump" d="M328 450 L460 450 Q500 410 540 450 L800 450"/>
+
+    <path class="no-connect-jump" d="M328 580 L460 580 Q500 540 540 580 L760 580 Q800 540 840 580 L1180 580"/>
+
+    <path class="no-connect-jump" d="M328 840 L760 840 Q800 800 840 840 L1180 840"/>
+
+    <path class="wire" d="M328 1180 L1620 1180 L1620 1110"/>
+  </g>
+
+  <!-- Branch: P5 to LED5 to R5 to P1 -->
+  <g id="branch-led5">
+    <circle class="junction" cx="500" cy="320" r="6"/>
+    <circle class="junction" cx="800" cy="320" r="6"/>
+    <line class="wire" x1="500" y1="320" x2="560" y2="320"/>
+    <path class="component red-led" d="M560 294 L560 346 L614 320 Z"/>
+    <line class="component" x1="628" y1="289" x2="628" y2="351"/>
+    <line class="led-ray" x1="584" y1="285" x2="612" y2="258"/>
+    <line class="led-ray" x1="606" y1="291" x2="634" y2="264"/>
+    <line class="wire" x1="628" y1="320" x2="664" y2="320"/>
+    <rect class="component" x="664" y="298" width="86" height="44" rx="4"/>
+    <line class="wire" x1="750" y1="320" x2="800" y2="320"/>
+    <text class="label-bold" x="596" y="382" text-anchor="middle">LED5</text>
+    <text class="small" x="596" y="404" text-anchor="middle">冰满</text>
+    <text class="label-bold" x="707" y="326" text-anchor="middle">R5</text>
+    <text class="mono" x="642" y="268" text-anchor="middle">P5 -- LED5 -- R5 -- P1</text>
+  </g>
+
+  <!-- Branch: P1 to SW2 to R7 to P3 -->
+  <g id="branch-sw2">
+    <circle class="junction" cx="800" cy="450" r="6"/>
+    <circle class="junction" cx="1180" cy="450" r="6"/>
+    <line class="wire" x1="800" y1="450" x2="878" y2="450"/>
+    <circle class="component" cx="890" cy="450" r="7"/>
+    <circle class="component" cx="974" cy="450" r="7"/>
+    <line class="thin-wire" x1="897" y1="447" x2="954" y2="416"/>
+    <line class="wire" x1="981" y1="450" x2="1024" y2="450"/>
+    <rect class="component" x="1024" y="428" width="86" height="44" rx="4"/>
+    <line class="wire" x1="1110" y1="450" x2="1180" y2="450"/>
+    <text class="label-bold" x="932" y="510" text-anchor="middle">SW2</text>
+    <text class="small" x="932" y="532" text-anchor="middle">选择</text>
+    <text class="label-bold" x="1067" y="456" text-anchor="middle">R7</text>
+    <text class="mono" x="990" y="396" text-anchor="middle">P1 -- SW2 -- R7 -- P3</text>
+  </g>
+
+  <!-- Branch: P3 to R3 to LED3 to P4 -->
+  <g id="branch-led3">
+    <circle class="junction" cx="1180" cy="610" r="6"/>
+    <circle class="junction" cx="1620" cy="610" r="6"/>
+    <line class="wire" x1="1180" y1="610" x2="1260" y2="610"/>
+    <rect class="component" x="1260" y="588" width="86" height="44" rx="4"/>
+    <line class="wire" x1="1346" y1="610" x2="1420" y2="610"/>
+    <path class="component green-led" d="M1420 584 L1420 636 L1474 610 Z"/>
+    <line class="component" x1="1488" y1="579" x2="1488" y2="641"/>
+    <line class="led-ray" x1="1444" y1="575" x2="1472" y2="548"/>
+    <line class="led-ray" x1="1466" y1="581" x2="1494" y2="554"/>
+    <line class="wire" x1="1488" y1="610" x2="1620" y2="610"/>
+    <text class="label-bold" x="1303" y="616" text-anchor="middle">R3</text>
+    <text class="label-bold" x="1454" y="672" text-anchor="middle">LED3</text>
+    <text class="small" x="1454" y="694" text-anchor="middle">大冰</text>
+    <text class="mono" x="1400" y="558" text-anchor="middle">P3 -- R3 -- LED3 -- P4</text>
+  </g>
+
+  <!-- Branch: P5 to LED4 to R4 to P2 -->
+  <g id="branch-led4">
+    <circle class="junction" cx="500" cy="640" r="6"/>
+    <circle class="junction" cx="1180" cy="640" r="6"/>
+    <line class="wire" x1="500" y1="640" x2="560" y2="640"/>
+    <path class="component red-led" d="M560 614 L560 666 L614 640 Z"/>
+    <line class="component" x1="628" y1="609" x2="628" y2="671"/>
+    <line class="led-ray" x1="584" y1="605" x2="612" y2="578"/>
+    <line class="led-ray" x1="606" y1="611" x2="634" y2="584"/>
+    <line class="wire" x1="628" y1="640" x2="664" y2="640"/>
+    <rect class="component" x="664" y="618" width="86" height="44" rx="4"/>
+    <path class="no-connect-jump" d="M750 640 L760 640 Q800 600 840 640 L1180 640"/>
+    <text class="label-bold" x="596" y="702" text-anchor="middle">LED4</text>
+    <text class="small" x="596" y="724" text-anchor="middle">缺水</text>
+    <text class="label-bold" x="707" y="646" text-anchor="middle">R4</text>
+    <text class="mono" x="870" y="612" text-anchor="middle">P5 -- LED4 -- R4 -- P2</text>
+  </g>
+
+  <!-- Branch: P2 to R2 to LED2 to P4 -->
+  <g id="branch-led2">
+    <circle class="junction" cx="1180" cy="760" r="6"/>
+    <circle class="junction" cx="1620" cy="760" r="6"/>
+    <line class="wire" x1="1180" y1="760" x2="1260" y2="760"/>
+    <rect class="component" x="1260" y="738" width="86" height="44" rx="4"/>
+    <line class="wire" x1="1346" y1="760" x2="1420" y2="760"/>
+    <path class="component green-led" d="M1420 734 L1420 786 L1474 760 Z"/>
+    <line class="component" x1="1488" y1="729" x2="1488" y2="791"/>
+    <line class="led-ray" x1="1444" y1="725" x2="1472" y2="698"/>
+    <line class="led-ray" x1="1466" y1="731" x2="1494" y2="704"/>
+    <line class="wire" x1="1488" y1="760" x2="1620" y2="760"/>
+    <text class="label-bold" x="1303" y="766" text-anchor="middle">R2</text>
+    <text class="label-bold" x="1454" y="822" text-anchor="middle">LED2</text>
+    <text class="small" x="1454" y="844" text-anchor="middle">小冰</text>
+    <text class="mono" x="1400" y="708" text-anchor="middle">P2 -- R2 -- LED2 -- P4</text>
+  </g>
+
+  <!-- Branch: P1 to SW1 to R6 to P2 -->
+  <g id="branch-sw1">
+    <circle class="junction" cx="800" cy="870" r="6"/>
+    <circle class="junction" cx="1180" cy="870" r="6"/>
+    <line class="wire" x1="800" y1="870" x2="878" y2="870"/>
+    <circle class="component" cx="890" cy="870" r="7"/>
+    <circle class="component" cx="974" cy="870" r="7"/>
+    <line class="thin-wire" x1="897" y1="867" x2="954" y2="836"/>
+    <line class="wire" x1="981" y1="870" x2="1024" y2="870"/>
+    <rect class="component" x="1024" y="848" width="86" height="44" rx="4"/>
+    <line class="wire" x1="1110" y1="870" x2="1180" y2="870"/>
+    <text class="label-bold" x="932" y="930" text-anchor="middle">SW1</text>
+    <text class="small" x="932" y="952" text-anchor="middle">开关</text>
+    <text class="label-bold" x="1067" y="876" text-anchor="middle">R6</text>
+    <text class="mono" x="990" y="816" text-anchor="middle">P1 -- SW1 -- R6 -- P2</text>
+  </g>
+
+  <!-- Branch: P1 to R1 to LED1 to P4 -->
+  <g id="branch-led1">
+    <circle class="junction" cx="800" cy="1110" r="6"/>
+    <circle class="junction" cx="1620" cy="1110" r="6"/>
+    <line class="wire" x1="800" y1="1110" x2="1000" y2="1110"/>
+    <rect class="component" x="1000" y="1088" width="86" height="44" rx="4"/>
+    <line class="wire" x1="1086" y1="1110" x2="1280" y2="1110"/>
+    <path class="component green-led" d="M1280 1084 L1280 1136 L1334 1110 Z"/>
+    <line class="component" x1="1348" y1="1079" x2="1348" y2="1141"/>
+    <line class="led-ray" x1="1304" y1="1075" x2="1332" y2="1048"/>
+    <line class="led-ray" x1="1326" y1="1081" x2="1354" y2="1054"/>
+    <line class="wire" x1="1348" y1="1110" x2="1620" y2="1110"/>
+    <text class="label-bold" x="1043" y="1116" text-anchor="middle">R1</text>
+    <text class="label-bold" x="1314" y="1172" text-anchor="middle">LED1</text>
+    <text class="small" x="1314" y="1194" text-anchor="middle">电源</text>
+    <text class="mono" x="1210" y="1058" text-anchor="middle">P1 -- R1 -- LED1 -- P4</text>
+  </g>
+
+  <!-- Extra connector junction dots after branches so true connections are visually dominant. -->
+  <g id="connector-junctions">
+    <circle class="junction" cx="1180" cy="580" r="5.2"/>
+    <circle class="junction" cx="1180" cy="840" r="5.2"/>
+    <circle class="junction" cx="1620" cy="1110" r="6"/>
+  </g>
+
+  <!-- Legend -->
+  <g id="legend">
+    <rect class="legend-card" x="1740" y="272" width="315" height="238" rx="12"/>
+    <text class="section" x="1764" y="306">图例</text>
+
+    <line class="wire" x1="1764" y1="342" x2="1842" y2="342"/>
+    <circle class="junction" cx="1804" cy="342" r="6"/>
+    <text class="small" x="1862" y="347">实心圆点：同一电气节点</text>
+
+    <path class="no-connect-jump" d="M1764 386 L1792 386 Q1818 358 1844 386 L1876 386"/>
+    <line class="thin-wire" x1="1818" y1="356" x2="1818" y2="414"/>
+    <text class="small" x="1890" y="391">跨线无圆点：未连接</text>
+
+    <g transform="translate(1764,438)">
+      <path class="component green-led" d="M0 -18 L0 18 L38 0 Z"/>
+      <line class="component" x1="48" y1="-22" x2="48" y2="22"/>
+      <line class="led-ray" x1="14" y1="-26" x2="34" y2="-46"/>
+      <line class="led-ray" x1="30" y1="-22" x2="50" y2="-42"/>
+      <text class="small" x="72" y="5">LED 指示灯</text>
+    </g>
+
+    <g transform="translate(1764,486)">
+      <circle class="component" cx="8" cy="0" r="6"/>
+      <circle class="component" cx="72" cy="0" r="6"/>
+      <line class="thin-wire" x1="14" y1="-2" x2="56" y2="-25"/>
+      <text class="small" x="96" y="5">常开瞬时按键</text>
+    </g>
+  </g>
+
+  <!-- Reference netlist box -->
+  <g id="netlist-box">
+    <rect class="legend-card" x="132" y="1242" width="1160" height="84" rx="12"/>
+    <text class="label-bold" x="158" y="1274">固定网表：</text>
+    <text class="mono" x="260" y="1274">P5-LED5-R5-P1  |  P5-LED4-R4-P2  |  P1-SW1-R6-P2  |  P1-SW2-R7-P3</text>
+    <text class="mono" x="260" y="1306">P3-R3-LED3-P4  |  P2-R2-LED2-P4  |  P1-R1-LED1-P4</text>
+  </g>
+
+  <text class="small" x="132" y="1410">备注：本图是面板 5 线网络的等效原理图；若用于实际改造或长期控制，应另行设计隔离、限流与保护前端。</text>
+</svg>
