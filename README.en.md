@@ -6,9 +6,9 @@
 
 Language: [中文](README.md) | English
 
-ESP32-C3 tooling for reverse-engineering and bench-controlling the five-wire
-ice-maker control panel. The final protocol summary for remote-control software
-is in:
+ESP32-C3 tooling for reverse-engineering and bench-controlling the Chang Hong
+`CH-Z6Y3` five-wire ice-maker control panel. The final protocol summary for
+remote-control software is in:
 
 ```text
 ice_panel_sniffer/PANEL_CONTROL_PROTOCOL.md
@@ -17,6 +17,13 @@ ice_panel_sniffer/PANEL_CONTROL_PROTOCOL.md
 ## Related Repository
 
 This repository focuses on electrical reverse engineering, the panel netlist, capture tooling, schematics, and PCB trace diagrams. For the ESPHome / Home Assistant firmware implementation built from the verified protocol, see [chang_hong_ice_maker_esphome](https://github.com/Ljzd-PRO/chang_hong_ice_maker_esphome).
+
+Additional documents and data:
+
+- [Control protocol summary](PANEL_CONTROL_PROTOCOL.md): reusable protocol reference with the fixed netlist, state signatures, and verified button simulation commands.
+- [Latest 2026-07-04 research results](LATEST_RESEARCH_20260704.md): ESPHome DMA debug captures, standby/small secondary features, current production classifier, and real-machine stability results.
+- [Original ESP32 raw capture archive](captures/ice_panel_sniffer-captures-20260630-130202.tar.gz): raw serial data, markers, generated reports, and charts from the original reverse-engineering session.
+- [ESPHome debug capture archive](captures/ice_panel_esphome-debug-captures-20260704.tar.gz): later DMA debug-firmware captures, structured D-frame data, and analysis reports.
 
 ## Raw Capture Data
 
@@ -51,6 +58,20 @@ Useful examples:
 - `20260628-213639-direct_sw1_sim_power_adc`: ESP32-simulated Power short press that returned the machine to standby.
 - `20260628-214710-direct_sw2_hold_5s_uv_adc` and `20260628-214855-direct_sw2_hold_5s_uv_off_adc`: ESP32-simulated 5-second Select holds for UV on/off.
 - `20260628-221419-current_state_check_adc` and `20260628-221633-current_state_check_2_adc`: final state-recognition checks, both confirmed correct on the real machine.
+
+A later ESPHome debug-firmware archive is also included:
+
+```text
+captures/ice_panel_esphome-debug-captures-20260704.tar.gz
+```
+
+This archive is about 72 KB. It contains ESP-IDF `adc_continuous` DMA captures for standby, small ice, and a network smoke run, plus old/new analysis reports. Key conclusions:
+
+- The debug firmware produced about `8.2 kHz` complete `P1-P5` frame statistics with median ADC error of `0.000%`.
+- Standby and small ice are both dominated by `MHMHH`; signature ratio alone cannot reliably separate them.
+- `P2 StdDev`, `Delta P2 P4`, and `Delta P5 P2` separate standby from small ice on a 1-second-class window.
+- The current ESPHome production firmware uses 1-second secondary feature voting, consecutive confirmation, a 16-second standby-blink fallback, and state-machine guardrails.
+- In five real-machine 130-second stability windows, public `State`, `Power`, and `Large Ice` did not show abnormal jumps.
 
 Representative charts are shown below. These are preview images extracted from the generated analysis plots in the archive; the full chart set remains in the raw data package.
 
@@ -356,18 +377,20 @@ P1-P3 changes  -> SW2 select scan
 Use the ESPHome project for Home Assistant integration:
 
 ```sh
-.venv-esphome/bin/esphome config ice_panel_esphome/ice-maker.yaml
-.venv-esphome/bin/esphome compile ice_panel_esphome/ice-maker.yaml
-.venv-esphome/bin/esphome upload ice_panel_esphome/ice-maker.yaml --device /dev/cu.usbmodem11301
+cd ../chang_hong_ice_maker_esphome
+.venv-esphome/bin/esphome config chang-hong-ice-maker-esphome.yaml
+.venv-esphome/bin/esphome compile chang-hong-ice-maker-esphome.yaml
+.venv-esphome/bin/esphome upload chang-hong-ice-maker-esphome.yaml --device /dev/cu.usbmodem11301
 ```
 
 The ESPHome firmware exposes:
 
 ```text
-Mode select        Off / Small Ice / Large Ice
-UV Toggle button   5-second Select hold, no UV state feedback
-State text sensor  standby/running_large/running_small/starting/stopping/unknown
-Diagnostics        ADC signature, confidence, blink score, ratios, raw P1-P5
+Power switch        running / standby
+Large Ice switch    large / small ice; forced to large while standby
+UV Toggle button    5-second Select hold, no UV state feedback
+State text sensor   standby/running_large/running_small/starting/stopping/unknown
+Diagnostics         ADC signature, feature scores, delta features, confidence, raw P1-P5
 ```
 
 It keeps all P1-P5 GPIOs as floating inputs except during these verified
@@ -379,7 +402,7 @@ P3/GPIO2 low for 80 ms     select short press
 P3/GPIO2 low for 5000 ms   UV toggle
 ```
 
-The project was compiled successfully with ESPHome `2026.6.2`. If upload fails
+The project has been compiled, OTA-updated, and real-machine tested with ESPHome `2026.6.3`. If upload fails
 with `No serial data received`, manually enter ESP32-C3 download mode while the
 upload command is waiting:
 
@@ -393,6 +416,6 @@ If the board has no RESET button:
 hold BOOT -> reconnect USB -> release BOOT
 ```
 
-The generated `ice_panel_esphome/secrets.yaml` is only a placeholder. Replace
+The generated `../chang_hong_ice_maker_esphome/secrets.yaml` is only a placeholder. Replace
 the Wi-Fi credentials and Home Assistant API/OTA keys before expecting Home
 Assistant discovery or OTA updates to work.

@@ -3,6 +3,7 @@
 This document is the final working reference for future remote-control
 development. It summarizes the reverse-engineered five-wire panel, the verified
 state signatures, and the serial commands that simulate the original buttons.
+The verified target model is the Chang Hong `CH-Z6Y3`.
 
 The experimental direct-GPIO wiring has now been disconnected from the
 ice-maker. The ESP32-C3 remains connected to the Mac only.
@@ -96,8 +97,14 @@ MHMHH : P1/P3 mid, P2/P4/P5 high
 
 ## State Recognition
 
-Use ADC mode at `adc_us 1000`. For reliable standby detection, collect at least
-20-35 seconds so the 4-second power LED blink can be detected.
+The target machine verified so far is the Chang Hong `CH-Z6Y3`.
+
+The early sniffer firmware used ADC mode at `adc_us 1000`. Later ESPHome debug
+firmware used ESP32-C3 ADC1 continuous DMA on `GPIO0-GPIO4` and produced about
+`8.2 kHz` complete `P1-P5` frame statistics with `0.000%` median ADC error in
+the standby and small-ice captures. The higher-rate debug data confirmed that
+sampling speed is not the limiting factor; the important improvement is using
+better short-window features and state-machine guardrails.
 
 ### Running, Large Ice
 
@@ -134,7 +141,7 @@ no 4-second power LED blink
 ```
 
 Important: small running mode and standby can both have `MHMHH` as the dominant
-bucket. Distinguish them with the power LED blink test.
+bucket. Signature ratio alone is not sufficient.
 
 Observed and verified in:
 
@@ -163,6 +170,34 @@ P1/LED1 peak: about 0.253 Hz, period about 3.94 s
 classification: standby
 ```
 
+Later DMA debug data:
+
+```text
+20260704-213218-debug_standby_dma
+MHMHH median ratio: about 74.6%
+0HHHH median ratio: about 1.0%
+backend: ESP-IDF adc_continuous DMA
+complete P1-P5 frame rate median: about 8233.5 Hz
+ADC error median: 0.000%
+```
+
+### Standby vs Small-Ice Discriminators
+
+The latest research shows that standby and small ice must be separated with
+secondary features. In the ESPHome debug captures, these features cleanly
+separated the two states:
+
+| Feature | Standby p10/p50/p90 | Small p10/p50/p90 | Small direction rule |
+| --- | ---: | ---: | --- |
+| `P1 StdDev` | 459.8 / 531.9 / 667.1 | 761.7 / 772.8 / 796.5 | `P1 StdDev > 683.3` |
+| `Delta P1 P3` | -248.5 / -216.8 / -144.9 | -95.9 / -86.9 / -72.6 | `Delta P1 P3 > -136.6` |
+| `P2 StdDev` | 738.5 / 746.1 / 756.1 | 549.3 / 562.1 / 584.4 | `P2 StdDev < 724.1` |
+| `Delta P2 P4` | -170.2 / -158.1 / -150.0 | -31.7 / -26.2 / -20.8 | `Delta P2 P4 > -146.5` |
+| `Delta P5 P2` | 148.8 / 155.4 / 163.2 | -3.0 / 1.6 / 7.2 | `Delta P5 P2 < 143.4` |
+
+The production ESPHome classifier currently uses the more conservative
+three-feature vote based on `P2 StdDev`, `Delta P2 P4`, and `Delta P5 P2`.
+
 ### Fault LEDs
 
 The direct floating method did not robustly separate these states:
@@ -178,25 +213,45 @@ ice-full as unresolved in the direct-GPIO ADC method.
 
 ## Suggested Classifier
 
-For future software, classify from a 20-35 second ADC capture:
+For future software, prefer the current production classifier rather than the
+older signature-only plus 20-35 second blink classifier.
+
+Use a short feature window first:
 
 ```text
-if ratio(0HHHH) > 0.65 and no strong 0.25 Hz blink:
-    state = RUN_LARGE
-elif ratio(MHMHH) > 0.55:
-    if P1 or P1-P4 has a strong 0.18-0.35 Hz component:
-        state = STANDBY
+if ratio(0HHHH) >= 0.65:
+    candidate = RUN_LARGE
+elif ratio(MHMHH) >= 0.55:
+    small_score = 0
+    if P2_stddev <= 650: small_score += 1
+    if mean(P2 - P4) >= -120: small_score += 1
+    if mean(P5 - P2) <= 80: small_score += 1
+
+    standby_score = 0
+    if P2_stddev >= 700: standby_score += 1
+    if mean(P2 - P4) <= -145: standby_score += 1
+    if mean(P5 - P2) >= 120: standby_score += 1
+
+    if small_score >= 2 and standby_score < 2:
+        candidate = RUN_SMALL
+    elif standby_score >= 2 and small_score < 2:
+        candidate = STANDBY
     else:
-        state = RUN_SMALL
+        candidate = UNKNOWN
 else:
-    state = UNKNOWN
+    candidate = UNKNOWN
 ```
 
-A practical blink score is the FFT power share in the `0.18-0.35 Hz` band for
-0.5-second binned `P1` or `P1-P4`.
+Practical implementation notes:
 
-Do not classify standby from a very short capture; the 4-second blink must have
-time to appear.
+- Use about a 1-second feature window and require two consecutive matching
+  candidates before changing the public state.
+- Keep a 16-second standby blink detector as a fallback for ambiguous standby
+  cases. A practical blink score is the FFT power share in the `0.18-0.35 Hz`
+  band for 0.5-second binned `P1` or `P1-P4`.
+- Do not let short-window `MHMHH` alone move the public state from standby to
+  small ice.
+- On `CH-Z6Y3`, startup from standby always enters Large Ice first.
 
 ## Firmware Serial Commands
 
@@ -350,27 +405,27 @@ Recommended high-level operations:
 
 ```text
 get_state():
-    collect ADC for 20-35 s
-    classify as STANDBY, RUN_LARGE, RUN_SMALL, or UNKNOWN
+    run the short-window feature classifier continuously
+    use the slow standby-blink window only as a fallback/correction path
 
 power_off():
     if state is RUN_LARGE or RUN_SMALL:
         send "sw1_od 100"
-        wait 5-10 s
-        verify STANDBY with blink-aware classifier
+        publish stopping/pending state
+        verify STANDBY with feature classifier or standby blink fallback
 
 power_on():
     if state is STANDBY:
         send "sw1_od 100"
-        wait 10-20 s
-        verify RUN_LARGE or RUN_SMALL
-    note: active power-on should be verified after final hardware is installed
+        publish starting/pending state
+        verify RUN_LARGE
+    note: CH-Z6Y3 starts from standby into Large Ice
 
 set_size(target):
     ensure machine is running
     if current size differs from target:
         send "sw2_od 80"
-        wait 1-2 s
+        wait for two matching short-window candidates
         verify target size
 
 toggle_uv():
@@ -382,16 +437,29 @@ toggle_uv():
 Because UV has no panel feedback, do not offer an idempotent `set_uv(on/off)`
 unless there is persistent software state or an external sensor.
 
+State-machine guardrails are required:
+
+- Do not allow passive `STANDBY -> RUN_SMALL`; startup from standby must pass
+  through `RUN_LARGE`.
+- Allow passive `STANDBY -> RUN_LARGE` because the user may press the physical
+  power button.
+- Allow `RUN_LARGE <-> RUN_SMALL` after consecutive short-window confirmation.
+- Keep the public state latched during brief `UNKNOWN` candidates.
+- If an action is already running, confirming, or cooling down, refuse new power
+  or ice-size commands. UV long-press requests may be queued only if the
+  implementation explicitly documents that behavior.
+
 ## ESPHome Implementation
 
 The Home Assistant firmware lives in:
 
 ```text
-ice_panel_esphome/
+chang_hong_ice_maker_esphome/
 ```
 
 It uses ESPHome Native API, a local `external_components` component named
-`ice_panel`, and the same direct GPIO mapping verified during the bench tests:
+`chang_hong_ice_maker_esphome`, and the same direct GPIO mapping verified
+during the bench tests:
 
 ```text
 P1 -> GPIO0 / ADC1_CH0
@@ -401,34 +469,35 @@ P4 -> GPIO3 / ADC1_CH3
 P5 -> GPIO4 / ADC1_CH4
 ```
 
-The component samples P1-P5 at 1 kHz and keeps 64 half-second bins, giving a
-32-second rolling signature window. The exported Home Assistant entities are:
+The component samples P1-P5 at about 1 kHz. It uses short-window feature voting,
+standby blink fallback, and state-machine guardrails. The exported Home
+Assistant entities are:
 
 ```text
-select Mode        Off / Small Ice / Large Ice
-button UV Toggle   sends a 5 s Select hold; no UV feedback is claimed
-text State         standby/running_large/running_small/starting/stopping/unknown
-diagnostics        ADC signature, confidence, blink score, ratios, raw P1-P5
+switch Power        running / standby
+switch Large Ice    large / small ice; forced to large while standby
+button UV Toggle    sends a 5 s Select hold; no UV feedback is claimed
+text State          standby/running_large/running_small/starting/stopping/unknown
+diagnostics         Target Model, ADC signature, feature scores, delta features,
+                    confidence, blink score, ratios, raw P1-P5
 ```
 
-`Mode` is the main control surface. `Off` sends the SW1 power short press from a
-running state. `Small Ice` and `Large Ice` send SW2 select pulses when already
-running. If the current state is `standby`, selecting `Small Ice` or `Large Ice`
-first sends SW1 to start the machine, then sends SW2 after startup if the
-classified size differs from the requested target. Unknown states are refused
-and logged rather than blindly pulsing the panel.
+`Power` is the main run/standby control. `Large Ice` is the ice-size control and
+is forced to `on` while the machine is standby because `CH-Z6Y3` always starts
+from standby into large ice. Unknown states are refused and logged rather than
+blindly pulsing the panel.
 
 Build and serial settings:
 
 ```text
-ESPHome version tested: 2026.6.2
+ESPHome version tested: 2026.6.3
 Board: esp32-c3-devkitm-1
 Framework: Arduino
 Logger: 921600 baud, DEBUG level, USB_SERIAL_JTAG
 Compile result: success
 ```
 
-The local `ice_panel_esphome/secrets.yaml` contains placeholder Wi-Fi
+The local `chang_hong_ice_maker_esphome/secrets.yaml` contains placeholder Wi-Fi
 credentials and random API/OTA keys so serial-only builds can compile. Replace
 the Wi-Fi SSID/password and Home Assistant keys before production use.
 
@@ -448,7 +517,7 @@ hold BOOT -> reconnect USB -> release BOOT
 Then rerun:
 
 ```sh
-.venv-esphome/bin/esphome upload ice_panel_esphome/ice-maker.yaml --device /dev/cu.usbmodem11301
+.venv-esphome/bin/esphome upload chang_hong_ice_maker_esphome/chang-hong-ice-maker-esphome.yaml --device /dev/cu.usbmodem11301
 ```
 
 ## Recommended Production Hardware

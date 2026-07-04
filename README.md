@@ -6,7 +6,7 @@
 
 语言：中文 | [English](README.en.md)
 
-这是一个基于 ESP32-C3 的工具集，用于逆向分析和台架控制制冰机五线控制面板。供后续远程控制软件使用的最终协议总结在：
+这是一个基于 ESP32-C3 的工具集，用于逆向分析和台架控制长虹 `CH-Z6Y3` 制冰机五线控制面板。供后续远程控制软件使用的最终协议总结在：
 
 ```text
 PANEL_CONTROL_PROTOCOL.md
@@ -16,8 +16,10 @@ PANEL_CONTROL_PROTOCOL.md
 
 - [English README](README.en.md)：本 README 的英文版，适合英文读者快速了解项目、接线和采集流程。
 - [控制协议总结](PANEL_CONTROL_PROTOCOL.md)：最终可复用的协议参考，包含固定网表、状态签名、扫描频率和已验证的按键模拟命令。
+- [2026-07-04 最新研究结果](LATEST_RESEARCH_20260704.md)：记录 ESPHome 调试固件 DMA 抓包、待机/小冰二级特征、当前生产分类器和实机稳定性结论。
 - [完整逆向分析故事](REVERSE_ENGINEERING_STORY_CN.md)：面向软件开发者的中文长文，完整记录从照片、电压测量、采集失败、实机验证到远程控制成功的全过程。
 - [ESP32 原始采集数据包](captures/ice_panel_sniffer-captures-20260630-130202.tar.gz)：包含本次逆向中采集到的串口原始数据、事件标记、自动报告和图表。
+- [ESPHome 调试抓包数据包](captures/ice_panel_esphome-debug-captures-20260704.tar.gz)：包含后续 DMA 调试固件的待机/小冰抓包、结构化 D-frame 数据和分析报告。
 
 ## 原始采集数据
 
@@ -52,6 +54,20 @@ tar -xzf captures/ice_panel_sniffer-captures-20260630-130202.tar.gz
 - `20260628-213639-direct_sw1_sim_power_adc`：ESP32 模拟“开关”短按，使机器回到待机。
 - `20260628-214710-direct_sw2_hold_5s_uv_adc` 与 `20260628-214855-direct_sw2_hold_5s_uv_off_adc`：ESP32 模拟“选择”长按 5 秒，开启/关闭 UV。
 - `20260628-221419-current_state_check_adc` 与 `20260628-221633-current_state_check_2_adc`：最终状态识别校验，两次判断均被实机验证正确。
+
+后续 ESPHome 调试固件新增了一份高频调试抓包归档：
+
+```text
+captures/ice_panel_esphome-debug-captures-20260704.tar.gz
+```
+
+该归档约 72 KB，包含 ESP-IDF `adc_continuous` DMA 后端采集的待机、小冰和网络 smoke 数据，以及新旧抓包对比分析。关键结论：
+
+- 调试固件稳定输出约 `8.2 kHz` 的完整 `P1-P5` 帧统计，ADC 错误率中位数为 `0.000%`。
+- 待机和小冰都以 `MHMHH` 为主，签名比例无法可靠区分二者。
+- `P2 StdDev`、`Delta P2 P4`、`Delta P5 P2` 能在 1 秒级窗口内显著区分待机和小冰。
+- 当前 ESPHome 生产固件采用“1 秒二级特征投票 + 连续确认 + 16 秒待机慢闪兜底 + 状态机护栏”的识别机制。
+- 实机 5 组 130 秒稳定性测试中，`State`、`Power`、`Large Ice` 没有异常跳变。
 
 代表性图表如下。它们是从压缩包内的自动分析图中抽取出来的预览，完整图表仍在原始数据包中。
 
@@ -366,10 +382,11 @@ cd ../chang_hong_ice_maker_esphome
 ESPHome 固件暴露：
 
 ```text
-Mode select        Off / Small Ice / Large Ice
-UV Toggle button   5 秒选择键长按，无 UV 状态反馈
-State text sensor  standby/running_large/running_small/starting/stopping/unknown
-Diagnostics        ADC signature、confidence、blink score、ratios、P1-P5 原始值
+Power switch        运行/待机
+Large Ice switch    大冰/小冰；待机时固定显示为大冰
+UV Toggle button    5 秒选择键长按，无 UV 状态反馈
+State text sensor   standby/running_large/running_small/starting/stopping/unknown
+Diagnostics         ADC signature、feature scores、delta features、confidence、P1-P5 原始值
 ```
 
 除了执行这些已验证的开漏动作时，ESPHome 固件会让所有 `P1-P5` GPIO 保持浮空输入：
@@ -380,7 +397,7 @@ P3/GPIO2 low for 80 ms     选择键短按
 P3/GPIO2 low for 5000 ms   UV 切换
 ```
 
-该项目已经使用 ESPHome `2026.6.2` 成功编译。如果上传失败并提示 `No serial data received`，可以在上传命令等待期间手动让 ESP32-C3 进入下载模式：
+该项目已经使用 ESPHome `2026.6.3` 成功编译、OTA 和实机测试。如果上传失败并提示 `No serial data received`，可以在上传命令等待期间手动让 ESP32-C3 进入下载模式：
 
 ```text
 hold BOOT -> tap RESET -> release BOOT
